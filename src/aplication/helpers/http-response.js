@@ -1,4 +1,8 @@
-const { UnauthorizedError, MissingParamError } = require('../errors');
+const {
+  UnauthorizedError,
+  MissingParamError,
+  ServerError,
+} = require('../errors');
 
 class HttpResponse {
   static badRequest(paramName) {
@@ -11,6 +15,7 @@ class HttpResponse {
   static serverError() {
     return {
       statusCode: 500,
+      body: new ServerError(),
     };
   }
 
