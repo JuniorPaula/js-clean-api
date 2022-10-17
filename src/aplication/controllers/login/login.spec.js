@@ -1,6 +1,6 @@
 class LoginController {
   async handle(httpRequest) {
-    if (!httpRequest) {
+    if (!httpRequest || !httpRequest.body) {
       return {
         statusCode: 500,
       };
@@ -41,6 +41,14 @@ describe('LoginController', () => {
     const sut = new LoginController();
 
     const httpResponse = await sut.handle();
+    expect(httpResponse.statusCode).toBe(500);
+  });
+
+  test('Should return 500 if HttpRequest has no body', async () => {
+    const sut = new LoginController();
+    const httpRequest = {};
+
+    const httpResponse = await sut.handle(httpRequest);
     expect(httpResponse.statusCode).toBe(500);
   });
 });
