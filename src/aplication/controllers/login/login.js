@@ -1,6 +1,10 @@
 const { HttpResponse } = require('../../helpers/http-response');
 
 class LoginController {
+  constructor(authUsecase) {
+    this.authUsecase = authUsecase;
+  }
+
   async handle(httpRequest) {
     if (!httpRequest || !httpRequest.body) {
       return HttpResponse.serverError();
@@ -12,6 +16,8 @@ class LoginController {
     if (!password) {
       return HttpResponse.badRequest('password');
     }
+
+    this.authUsecase.auth(email, password);
   }
 }
 

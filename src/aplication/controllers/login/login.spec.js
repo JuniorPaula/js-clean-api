@@ -2,12 +2,24 @@ const { MissingParamError } = require('../../errors/missing-param-error');
 const { LoginController } = require('./login');
 
 const makeSut = () => {
-  return new LoginController();
+  class AuthUsecaseSpy {
+    auth(email, password) {
+      this.email = email;
+      this.password = password;
+    }
+  }
+  const authUsecaseSpy = new AuthUsecaseSpy();
+  const sut = new LoginController(authUsecaseSpy);
+
+  return {
+    sut,
+    authUsecaseSpy,
+  };
 };
 
 describe('LoginController', () => {
   test('Should return 400 if no email is provided', async () => {
-    const sut = makeSut();
+    const { sut } = makeSut();
     const httpRequest = {
       body: {
         password: 'any_password',
@@ -19,7 +31,7 @@ describe('LoginController', () => {
   });
 
   test('Should return 400 if no password is provided', async () => {
-    const sut = makeSut();
+    const { sut } = makeSut();
     const httpRequest = {
       body: {
         email: 'any_email@mail.com',
@@ -31,17 +43,31 @@ describe('LoginController', () => {
   });
 
   test('Should return 500 if no HttpRequest is provided', async () => {
-    const sut = makeSut();
+    const { sut } = makeSut();
 
     const httpResponse = await sut.handle();
     expect(httpResponse.statusCode).toBe(500);
   });
 
   test('Should return 500 if HttpRequest has no body', async () => {
-    const sut = makeSut();
+    const { sut } = makeSut();
     const httpRequest = {};
 
     const httpResponse = await sut.handle(httpRequest);
     expect(httpResponse.statusCode).toBe(500);
+  });
+
+  test('Should call AuthUsecase with correct params', async () => {
+    const { sut, authUsecaseSpy } = makeSut();
+    const httpRequest = {
+      body: {
+        email: 'any_email',
+        password: 'any_password',
+      },
+    };
+
+    await sut.handle(httpRequest);
+    expect(authUsecaseSpy.email).toBe(httpRequest.body.email);
+    expect(authUsecaseSpy.password).toBe(httpRequest.body.password);
   });
 });
