@@ -18,6 +18,9 @@ class LoginController {
     }
 
     this.authUsecase.auth(email, password);
+    return {
+      statusCode: 401,
+    };
   }
 }
 
