@@ -1,38 +1,5 @@
-class LoginController {
-  async handle(httpRequest) {
-    if (!httpRequest || !httpRequest.body) {
-      return HttpResponse.serverError();
-    }
-    const { email, password } = httpRequest.body;
-    if (!email) {
-      return HttpResponse.badRequest('email');
-    }
-    if (!password) {
-      return HttpResponse.badRequest('password');
-    }
-  }
-}
-
-class HttpResponse {
-  static badRequest(paramName) {
-    return {
-      statusCode: 400,
-      body: new MissingParamError(paramName),
-    };
-  }
-
-  static serverError() {
-    return {
-      statusCode: 500,
-    };
-  }
-}
-
-class MissingParamError extends Error {
-  constructor(paramName) {
-    super(`Missing param: ${paramName}`);
-  }
-}
+const { LoginController } = require('./login');
+const { MissingParamError } = require('../../errors/missing-param-error');
 
 describe('LoginController', () => {
   test('Should return 400 if no email is provided', async () => {
