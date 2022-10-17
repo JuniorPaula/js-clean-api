@@ -1,4 +1,4 @@
-const { MissingParamError } = require('../../errors/missing-param-error');
+const { MissingParamError, UnauthorizedError } = require('../../errors');
 const { LoginController } = require('./login');
 
 const makeSut = () => {
@@ -82,5 +82,6 @@ describe('LoginController', () => {
 
     const httpResponse = await sut.handle(httpRequest);
     expect(httpResponse.statusCode).toBe(401);
+    expect(httpResponse.body).toEqual(new UnauthorizedError());
   });
 });
