@@ -1,9 +1,13 @@
-const { LoginController } = require('./login');
 const { MissingParamError } = require('../../errors/missing-param-error');
+const { LoginController } = require('./login');
+
+const makeSut = () => {
+  return new LoginController();
+};
 
 describe('LoginController', () => {
   test('Should return 400 if no email is provided', async () => {
-    const sut = new LoginController();
+    const sut = makeSut();
     const httpRequest = {
       body: {
         password: 'any_password',
@@ -15,7 +19,7 @@ describe('LoginController', () => {
   });
 
   test('Should return 400 if no password is provided', async () => {
-    const sut = new LoginController();
+    const sut = makeSut();
     const httpRequest = {
       body: {
         email: 'any_email@mail.com',
@@ -27,14 +31,14 @@ describe('LoginController', () => {
   });
 
   test('Should return 500 if no HttpRequest is provided', async () => {
-    const sut = new LoginController();
+    const sut = makeSut();
 
     const httpResponse = await sut.handle();
     expect(httpResponse.statusCode).toBe(500);
   });
 
   test('Should return 500 if HttpRequest has no body', async () => {
-    const sut = new LoginController();
+    const sut = makeSut();
     const httpRequest = {};
 
     const httpResponse = await sut.handle(httpRequest);
