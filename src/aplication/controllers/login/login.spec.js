@@ -90,7 +90,7 @@ describe('LoginController', () => {
   });
 
   test('Should return 200 if valid credentials are provided', async () => {
-    const { sut } = makeSut();
+    const { sut, authUsecaseSpy } = makeSut();
 
     const httpRequest = {
       body: {
@@ -101,6 +101,7 @@ describe('LoginController', () => {
 
     const httpResponse = await sut.handle(httpRequest);
     expect(httpResponse.statusCode).toBe(200);
+    expect(httpResponse.body.accessToken).toEqual(authUsecaseSpy.accessToken);
   });
 
   test('Should return 500 if no authUsecase is provided', async () => {
