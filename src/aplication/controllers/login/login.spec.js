@@ -6,9 +6,12 @@ const makeSut = () => {
     auth(email, password) {
       this.email = email;
       this.password = password;
+      return this.accessToken;
     }
   }
   const authUsecaseSpy = new AuthUsecaseSpy();
+  authUsecaseSpy.accessToken = 'valid_accessToken';
+
   const sut = new LoginController(authUsecaseSpy);
 
   return {
@@ -72,7 +75,8 @@ describe('LoginController', () => {
   });
 
   test('Should return 401 when invalid credentials are provided', async () => {
-    const { sut } = makeSut();
+    const { sut, authUsecaseSpy } = makeSut();
+    authUsecaseSpy.accessToken = null;
     const httpRequest = {
       body: {
         email: 'invalid_email@mail.com',
@@ -83,6 +87,20 @@ describe('LoginController', () => {
     const httpResponse = await sut.handle(httpRequest);
     expect(httpResponse.statusCode).toBe(401);
     expect(httpResponse.body).toEqual(new UnauthorizedError());
+  });
+
+  test('Should return 200 if valid credentials are provided', async () => {
+    const { sut } = makeSut();
+
+    const httpRequest = {
+      body: {
+        email: 'valid_email@mail.com',
+        password: 'valid_password',
+      },
+    };
+
+    const httpResponse = await sut.handle(httpRequest);
+    expect(httpResponse.statusCode).toBe(200);
   });
 
   test('Should return 500 if no authUsecase is provided', async () => {

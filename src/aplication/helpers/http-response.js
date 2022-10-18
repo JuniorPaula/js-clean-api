@@ -5,6 +5,12 @@ const {
 } = require('../errors');
 
 class HttpResponse {
+  static ok() {
+    return {
+      statusCode: 200,
+    };
+  }
+
   static badRequest(paramName) {
     return {
       statusCode: 400,

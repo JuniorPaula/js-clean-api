@@ -22,8 +22,12 @@ class LoginController {
       return HttpResponse.badRequest('password');
     }
 
-    this.authUsecase.auth(email, password);
-    return HttpResponse.unauthorizedError();
+    const accessToken = this.authUsecase.auth(email, password);
+    if (!accessToken) {
+      return HttpResponse.unauthorizedError();
+    }
+
+    return HttpResponse.ok();
   }
 }
 
