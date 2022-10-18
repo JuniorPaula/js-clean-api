@@ -84,4 +84,17 @@ describe('LoginController', () => {
     expect(httpResponse.statusCode).toBe(401);
     expect(httpResponse.body).toEqual(new UnauthorizedError());
   });
+
+  test('Should return 500 if no authUsecase is provided', async () => {
+    const sut = new LoginController();
+    const httpRequest = {
+      body: {
+        email: 'any_email@mail.com',
+        password: 'any_password',
+      },
+    };
+
+    const httpResponse = await sut.handle(httpRequest);
+    expect(httpResponse.statusCode).toBe(500);
+  });
 });
