@@ -97,4 +97,19 @@ describe('LoginController', () => {
     const httpResponse = await sut.handle(httpRequest);
     expect(httpResponse.statusCode).toBe(500);
   });
+
+  test('Should return 500 if authUsecase has no auth method', async () => {
+    class AuthUsecaseSpy {}
+    const authUsecaseSpy = new AuthUsecaseSpy();
+    const sut = new LoginController(authUsecaseSpy);
+    const httpRequest = {
+      body: {
+        email: 'any_email@mail.com',
+        password: 'any_password',
+      },
+    };
+
+    const httpResponse = await sut.handle(httpRequest);
+    expect(httpResponse.statusCode).toBe(500);
+  });
 });

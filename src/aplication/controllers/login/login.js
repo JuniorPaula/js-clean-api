@@ -6,7 +6,12 @@ class LoginController {
   }
 
   async handle(httpRequest) {
-    if (!httpRequest || !httpRequest.body || !this.authUsecase) {
+    if (
+      !httpRequest ||
+      !httpRequest.body ||
+      !this.authUsecase ||
+      !this.authUsecase.auth
+    ) {
       return HttpResponse.serverError();
     }
     const { email, password } = httpRequest.body;
