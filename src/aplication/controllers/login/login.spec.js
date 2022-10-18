@@ -1,4 +1,8 @@
-const { MissingParamError, UnauthorizedError } = require('../../errors');
+const {
+  MissingParamError,
+  UnauthorizedError,
+  ServerError,
+} = require('../../errors');
 const { LoginController } = require('./login');
 
 const makeSut = () => {
@@ -43,21 +47,6 @@ describe('LoginController', () => {
     const httpResponse = await sut.handle(httpRequest);
     expect(httpResponse.statusCode).toBe(400);
     expect(httpResponse.body).toEqual(new MissingParamError('password'));
-  });
-
-  test('Should return 500 if no HttpRequest is provided', async () => {
-    const { sut } = makeSut();
-
-    const httpResponse = await sut.handle();
-    expect(httpResponse.statusCode).toBe(500);
-  });
-
-  test('Should return 500 if HttpRequest has no body', async () => {
-    const { sut } = makeSut();
-    const httpRequest = {};
-
-    const httpResponse = await sut.handle(httpRequest);
-    expect(httpResponse.statusCode).toBe(500);
   });
 
   test('Should call AuthUsecase with correct params', async () => {
@@ -115,6 +104,7 @@ describe('LoginController', () => {
 
     const httpResponse = await sut.handle(httpRequest);
     expect(httpResponse.statusCode).toBe(500);
+    expect(httpResponse.body).toEqual(new ServerError());
   });
 
   test('Should return 500 if authUsecase has no auth method', async () => {
@@ -130,5 +120,23 @@ describe('LoginController', () => {
 
     const httpResponse = await sut.handle(httpRequest);
     expect(httpResponse.statusCode).toBe(500);
+    expect(httpResponse.body).toEqual(new ServerError());
+  });
+
+  test('Should return 500 if no HttpRequest is provided', async () => {
+    const { sut } = makeSut();
+
+    const httpResponse = await sut.handle();
+    expect(httpResponse.statusCode).toBe(500);
+    expect(httpResponse.body).toEqual(new ServerError());
+  });
+
+  test('Should return 500 if HttpRequest has no body', async () => {
+    const { sut } = makeSut();
+    const httpRequest = {};
+
+    const httpResponse = await sut.handle(httpRequest);
+    expect(httpResponse.statusCode).toBe(500);
+    expect(httpResponse.body).toEqual(new ServerError());
   });
 });
