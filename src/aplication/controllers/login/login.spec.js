@@ -7,7 +7,7 @@ const { LoginController } = require('./login');
 
 const mockAuthUsecaseError = () => {
   class AuthUsecaseSpy {
-    auth() {
+    async auth() {
       throw new Error();
     }
   }
@@ -16,7 +16,7 @@ const mockAuthUsecaseError = () => {
 
 const mockAuthUsecase = () => {
   class AuthUsecaseSpy {
-    auth(email, password) {
+    async auth(email, password) {
       this.email = email;
       this.password = password;
       return this.accessToken;

@@ -15,7 +15,7 @@ class LoginController {
         return HttpResponse.badRequest('password');
       }
 
-      const accessToken = this.authUsecase.auth(email, password);
+      const accessToken = await this.authUsecase.auth(email, password);
       if (!accessToken) {
         return HttpResponse.unauthorizedError();
       }
