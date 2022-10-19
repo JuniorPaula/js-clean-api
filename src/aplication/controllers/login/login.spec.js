@@ -2,6 +2,7 @@ const {
   MissingParamError,
   UnauthorizedError,
   ServerError,
+  InvalidParamError,
 } = require('../../errors');
 const { LoginController } = require('./login');
 
@@ -22,18 +23,35 @@ const mockAuthUsecase = () => {
       return this.accessToken;
     }
   }
-  return new AuthUsecaseSpy();
+  const authUsecaseSpy = new AuthUsecaseSpy();
+  authUsecaseSpy.accessToken = 'valid_accessToken';
+  return authUsecaseSpy;
+};
+
+const mockEmailValidator = () => {
+  class EmailValidatorSpy {
+    // eslint-disable-next-line no-unused-vars
+    isValid(email) {
+      return this.isEmailValid;
+    }
+  }
+
+  const emailValidatorSpy = new EmailValidatorSpy();
+  emailValidatorSpy.isEmailValid = true;
+  return emailValidatorSpy;
 };
 
 const makeSut = () => {
   const authUsecaseSpy = mockAuthUsecase();
-  authUsecaseSpy.accessToken = 'valid_accessToken';
 
-  const sut = new LoginController(authUsecaseSpy);
+  const emailValidatorSpy = mockEmailValidator();
+
+  const sut = new LoginController(authUsecaseSpy, emailValidatorSpy);
 
   return {
     sut,
     authUsecaseSpy,
+    emailValidatorSpy,
   };
 };
 
@@ -167,5 +185,20 @@ describe('LoginController', () => {
     const httpResponse = await sut.handle(httpRequest);
     expect(httpResponse.statusCode).toBe(500);
     expect(httpResponse.body).toEqual(new ServerError());
+  });
+
+  test('Should return 400 if invalid email is provided', async () => {
+    const { sut, emailValidatorSpy } = makeSut();
+    emailValidatorSpy.isEmailValid = false;
+
+    const httpRequest = {
+      body: {
+        email: 'invalid@mail.com',
+        password: 'any_password',
+      },
+    };
+    const httpResponse = await sut.handle(httpRequest);
+    expect(httpResponse.statusCode).toBe(400);
+    expect(httpResponse.body).toEqual(new InvalidParamError('email'));
   });
 });
