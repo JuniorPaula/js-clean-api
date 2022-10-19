@@ -201,4 +201,20 @@ describe('LoginController', () => {
     expect(httpResponse.statusCode).toBe(400);
     expect(httpResponse.body).toEqual(new InvalidParamError('email'));
   });
+
+  test('Should return 500 if EamailValidator is not provided', async () => {
+    const emailValidatorSpy = mockEmailValidator();
+    const sut = new LoginController(emailValidatorSpy);
+
+    const httpRequest = {
+      body: {
+        email: 'any_email@mail.com',
+        password: 'any_password',
+      },
+    };
+
+    const httpResponse = await sut.handle(httpRequest);
+    expect(httpResponse.statusCode).toBe(500);
+    expect(httpResponse.body).toEqual(new ServerError());
+  });
 });
