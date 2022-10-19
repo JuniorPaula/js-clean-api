@@ -30,8 +30,8 @@ const mockAuthUsecase = () => {
 
 const mockEmailValidator = () => {
   class EmailValidatorSpy {
-    // eslint-disable-next-line no-unused-vars
     isValid(email) {
+      this.email = email;
       return this.isEmailValid;
     }
   }
@@ -260,5 +260,18 @@ describe('LoginController', () => {
     const httpResponse = await sut.handle(httpRequest);
     expect(httpResponse.statusCode).toBe(500);
     expect(httpResponse.body).toEqual(new ServerError());
+  });
+
+  test('Should call EmailValidator with correct email', async () => {
+    const { sut, emailValidatorSpy } = makeSut();
+    const httpRequest = {
+      body: {
+        email: 'any_email',
+        password: 'any_password',
+      },
+    };
+
+    await sut.handle(httpRequest);
+    expect(emailValidatorSpy.email).toBe(httpRequest.body.email);
   });
 });
