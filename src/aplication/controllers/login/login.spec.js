@@ -5,7 +5,16 @@ const {
 } = require('../../errors');
 const { LoginController } = require('./login');
 
-const makeSut = () => {
+const mockAuthUsecaseError = () => {
+  class AuthUsecaseSpy {
+    auth() {
+      throw new Error();
+    }
+  }
+  return new AuthUsecaseSpy();
+};
+
+const mockAuthUsecase = () => {
   class AuthUsecaseSpy {
     auth(email, password) {
       this.email = email;
@@ -13,7 +22,11 @@ const makeSut = () => {
       return this.accessToken;
     }
   }
-  const authUsecaseSpy = new AuthUsecaseSpy();
+  return new AuthUsecaseSpy();
+};
+
+const makeSut = () => {
+  const authUsecaseSpy = mockAuthUsecase();
   authUsecaseSpy.accessToken = 'valid_accessToken';
 
   const sut = new LoginController(authUsecaseSpy);
@@ -93,6 +106,23 @@ describe('LoginController', () => {
     expect(httpResponse.body.accessToken).toEqual(authUsecaseSpy.accessToken);
   });
 
+  test('Should return 500 if no HttpRequest is provided', async () => {
+    const { sut } = makeSut();
+
+    const httpResponse = await sut.handle();
+    expect(httpResponse.statusCode).toBe(500);
+    expect(httpResponse.body).toEqual(new ServerError());
+  });
+
+  test('Should return 500 if HttpRequest has no body', async () => {
+    const { sut } = makeSut();
+    const httpRequest = {};
+
+    const httpResponse = await sut.handle(httpRequest);
+    expect(httpResponse.statusCode).toBe(500);
+    expect(httpResponse.body).toEqual(new ServerError());
+  });
+
   test('Should return 500 if no authUsecase is provided', async () => {
     const sut = new LoginController();
     const httpRequest = {
@@ -123,17 +153,16 @@ describe('LoginController', () => {
     expect(httpResponse.body).toEqual(new ServerError());
   });
 
-  test('Should return 500 if no HttpRequest is provided', async () => {
-    const { sut } = makeSut();
+  test('Should return 500 if AuthUsecase throws', async () => {
+    const authUsecaseSpyError = mockAuthUsecaseError();
+    const sut = new LoginController(authUsecaseSpyError);
 
-    const httpResponse = await sut.handle();
-    expect(httpResponse.statusCode).toBe(500);
-    expect(httpResponse.body).toEqual(new ServerError());
-  });
-
-  test('Should return 500 if HttpRequest has no body', async () => {
-    const { sut } = makeSut();
-    const httpRequest = {};
+    const httpRequest = {
+      body: {
+        email: 'any_email@mail.com',
+        password: 'any_password',
+      },
+    };
 
     const httpResponse = await sut.handle(httpRequest);
     expect(httpResponse.statusCode).toBe(500);
