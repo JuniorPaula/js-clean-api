@@ -1,7 +1,8 @@
+const validator = require('validator');
+
 class EmailValidator {
-  // eslint-disable-next-line no-unused-vars
   isValid(email) {
-    return true;
+    return validator.isEmail(email);
   }
 }
 
@@ -11,5 +12,13 @@ describe('EmailValidator', () => {
     const isValidEmail = sut.isValid('valid_email@mail.com');
 
     expect(isValidEmail).toBe(true);
+  });
+
+  test('Should return false if validator return false', () => {
+    validator.isValidEmail = false;
+    const sut = new EmailValidator();
+    const isValidEmail = sut.isValid('invalid_email@mail.com');
+
+    expect(isValidEmail).toBe(false);
   });
 });
