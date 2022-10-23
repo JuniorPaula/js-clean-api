@@ -1,9 +1,8 @@
+const { UnauthorizedError, ServerError } = require('../../errors');
 const {
-  MissingParamError,
-  UnauthorizedError,
-  ServerError,
   InvalidParamError,
-} = require('../../errors');
+  MissingParamError,
+} = require('../../../utils/errors');
 const { LoginController } = require('./login');
 
 const mockAuthUsecaseError = () => {
