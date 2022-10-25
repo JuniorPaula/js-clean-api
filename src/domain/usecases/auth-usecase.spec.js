@@ -1,6 +1,19 @@
 const { MissingParamError, InvalidParamError } = require('../../utils/errors');
 const { AuthUsecase } = require('./auth-usecase');
 
+const mockTokenGenerator = () => {
+  class TokenGerenatorStub {
+    async generate(userId) {
+      this.userId = userId;
+      return this.accessToken;
+    }
+  }
+
+  const tokenGerenatorStub = new TokenGerenatorStub();
+  tokenGerenatorStub.accessToken = 'any_accessToken';
+  return tokenGerenatorStub;
+};
+
 const mockEncrypter = () => {
   class EncrypterStub {
     async compare(password, hashedPassword) {
@@ -26,6 +39,7 @@ const mockLoadUserByEmailRepository = () => {
 
   const loadUserByEmailRepositoryStub = new LoadUserByEmailRepositoryStub();
   loadUserByEmailRepositoryStub.user = {
+    id: 'any_id',
     password: 'hashedPassword',
   };
 
@@ -35,13 +49,19 @@ const mockLoadUserByEmailRepository = () => {
 const makeSut = () => {
   const loadUserByEmailRepositoryStub = mockLoadUserByEmailRepository();
   const encrypterStub = mockEncrypter();
+  const tokenGeneratorStub = mockTokenGenerator();
 
-  const sut = new AuthUsecase(loadUserByEmailRepositoryStub, encrypterStub);
+  const sut = new AuthUsecase(
+    loadUserByEmailRepositoryStub,
+    encrypterStub,
+    tokenGeneratorStub,
+  );
 
   return {
     sut,
     loadUserByEmailRepositoryStub,
     encrypterStub,
+    tokenGeneratorStub,
   };
 };
 
@@ -115,6 +135,17 @@ describe('AuthUsecase', () => {
     expect(encrypterStub.password).toBe('any_password');
     expect(encrypterStub.hashedPassword).toBe(
       loadUserByEmailRepositoryStub.user.password,
+    );
+  });
+
+  test('Should call TokenGenerator with correct userId', async () => {
+    const { sut, loadUserByEmailRepositoryStub, tokenGeneratorStub } =
+      makeSut();
+
+    await sut.auth('valid_email@mail.com', 'valid_password');
+
+    expect(tokenGeneratorStub.userId).toBe(
+      loadUserByEmailRepositoryStub.user.id,
     );
   });
 });
