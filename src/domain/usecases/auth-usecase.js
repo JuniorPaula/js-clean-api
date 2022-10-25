@@ -20,7 +20,7 @@ class AuthUsecase {
     ) {
       throw new MissingParamError('loadUserByEmailRepository');
     }
-    if (!this.encrypter) {
+    if (!this.encrypter || !this.encrypter.compare) {
       throw new MissingParamError('Encrypter');
     }
 
