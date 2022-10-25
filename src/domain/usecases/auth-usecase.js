@@ -23,6 +23,9 @@ class AuthUsecase {
     if (!this.encrypter || !this.encrypter.compare) {
       throw new MissingParamError('Encrypter');
     }
+    if (!this.tokenGenerator) {
+      throw new MissingParamError('TokenGenerator');
+    }
 
     const user = await this.loadUserByEmailRepository.load(email);
 
