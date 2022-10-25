@@ -24,6 +24,8 @@ class AuthUsecase {
     if (!user) {
       return null;
     }
+
+    return null;
   }
 }
 
