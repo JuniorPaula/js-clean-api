@@ -148,4 +148,16 @@ describe('AuthUsecase', () => {
       loadUserByEmailRepositoryStub.user.id,
     );
   });
+
+  test('Should return an accessToken if correct credentials is provided', async () => {
+    const { sut, tokenGeneratorStub } = makeSut();
+
+    const accessToken = await sut.auth(
+      'valid_email@mail.com',
+      'valid_password',
+    );
+
+    expect(accessToken).toBe(tokenGeneratorStub.accessToken);
+    expect(accessToken).toBeTruthy();
+  });
 });
