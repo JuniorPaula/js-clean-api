@@ -19,7 +19,11 @@ class AuthUsecase {
       throw new InvalidParamError('loadUserByEmailRepository');
     }
 
-    await this.loadUserByEmailRepository.load(email);
+    const user = await this.loadUserByEmailRepository.load(email);
+
+    if (!user) {
+      return null;
+    }
   }
 }
 
@@ -70,12 +74,22 @@ describe('AuthUsecase', () => {
     );
   });
 
-  test('Should throw if no loadUserByEmailRepository has no load method', async () => {
+  test('Should throw if loadUserByEmailRepository has no load method', async () => {
     const sut = new AuthUsecase({});
     const promise = sut.auth('any_email@mail.com', 'any_password');
 
     await expect(promise).rejects.toThrow(
       new InvalidParamError('loadUserByEmailRepository'),
     );
+  });
+
+  test('Should return null if loadUserByEmailRepository return null', async () => {
+    const { sut } = makeSut();
+    const accessToken = await sut.auth(
+      'invalid_email@mail.com',
+      'any_password',
+    );
+
+    expect(accessToken).toBeNull();
   });
 });
