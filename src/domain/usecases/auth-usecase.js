@@ -23,7 +23,7 @@ class AuthUsecase {
     if (!this.encrypter || !this.encrypter.compare) {
       throw new MissingParamError('Encrypter');
     }
-    if (!this.tokenGenerator) {
+    if (!this.tokenGenerator || !this.tokenGenerator.generate) {
       throw new MissingParamError('TokenGenerator');
     }
 

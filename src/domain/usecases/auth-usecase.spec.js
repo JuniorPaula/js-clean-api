@@ -134,6 +134,18 @@ describe('AuthUsecase', () => {
     );
   });
 
+  test('Should throw if TokenGeneration has no generate method', async () => {
+    const loadUserByEmailRepository = mockLoadUserByEmailRepository();
+    const encrypterStub = mockEncrypter();
+    const sut = new AuthUsecase(loadUserByEmailRepository, encrypterStub, {});
+
+    const promise = sut.auth('any_email@mail.com', 'any_password');
+
+    await expect(promise).rejects.toThrow(
+      new MissingParamError('TokenGenerator'),
+    );
+  });
+
   test('Should return null if an invalid email is provided', async () => {
     const { sut, loadUserByEmailRepositoryStub } = makeSut();
     loadUserByEmailRepositoryStub.user = null;
