@@ -105,6 +105,14 @@ describe('AuthUsecase', () => {
     );
   });
 
+  test('Should throw if no Encrypter is provided', async () => {
+    const loadUserByEmailRepository = mockLoadUserByEmailRepository();
+    const sut = new AuthUsecase(loadUserByEmailRepository);
+    const promise = sut.auth('any_email@mail.com', 'any_password');
+
+    await expect(promise).rejects.toThrow(new MissingParamError('Encrypter'));
+  });
+
   test('Should return null if an invalid email is provided', async () => {
     const { sut, loadUserByEmailRepositoryStub } = makeSut();
     loadUserByEmailRepositoryStub.user = null;

@@ -20,6 +20,9 @@ class AuthUsecase {
     if (!this.loadUserByEmailRepository.load) {
       throw new InvalidParamError('loadUserByEmailRepository');
     }
+    if (!this.encrypter) {
+      throw new MissingParamError('Encrypter');
+    }
 
     const user = await this.loadUserByEmailRepository.load(email);
 
