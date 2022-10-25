@@ -1,4 +1,4 @@
-const { MissingParamError, InvalidParamError } = require('../../utils/errors');
+const { MissingParamError } = require('../../utils/errors');
 
 class AuthUsecase {
   constructor(loadUserByEmailRepository, encrypter, tokenGenerator) {
@@ -14,11 +14,11 @@ class AuthUsecase {
     if (!password) {
       throw new MissingParamError('password');
     }
-    if (!this.loadUserByEmailRepository) {
+    if (
+      !this.loadUserByEmailRepository ||
+      !this.loadUserByEmailRepository.load
+    ) {
       throw new MissingParamError('loadUserByEmailRepository');
-    }
-    if (!this.loadUserByEmailRepository.load) {
-      throw new InvalidParamError('loadUserByEmailRepository');
     }
     if (!this.encrypter) {
       throw new MissingParamError('Encrypter');

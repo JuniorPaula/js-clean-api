@@ -1,4 +1,4 @@
-const { MissingParamError, InvalidParamError } = require('../../utils/errors');
+const { MissingParamError } = require('../../utils/errors');
 const { AuthUsecase } = require('./auth-usecase');
 
 const mockTokenGenerator = () => {
@@ -101,7 +101,7 @@ describe('AuthUsecase', () => {
     const promise = sut.auth('any_email@mail.com', 'any_password');
 
     await expect(promise).rejects.toThrow(
-      new InvalidParamError('loadUserByEmailRepository'),
+      new MissingParamError('loadUserByEmailRepository'),
     );
   });
 
