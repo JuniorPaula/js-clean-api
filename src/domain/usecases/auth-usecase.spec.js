@@ -1,4 +1,4 @@
-const { MissingParamError } = require('../../utils/errors');
+const { MissingParamError, InvalidParamError } = require('../../utils/errors');
 
 class AuthUsecase {
   constructor(loadUserByEmailRepository) {
@@ -14,6 +14,9 @@ class AuthUsecase {
     }
     if (!this.loadUserByEmailRepository) {
       throw new MissingParamError('loadUserByEmailRepository');
+    }
+    if (!this.loadUserByEmailRepository.load) {
+      throw new InvalidParamError('loadUserByEmailRepository');
     }
 
     await this.loadUserByEmailRepository.load(email);
@@ -64,6 +67,15 @@ describe('AuthUsecase', () => {
 
     await expect(promise).rejects.toThrow(
       new MissingParamError('loadUserByEmailRepository'),
+    );
+  });
+
+  test('Should throw if no loadUserByEmailRepository has no load method', async () => {
+    const sut = new AuthUsecase({});
+    const promise = sut.auth('any_email@mail.com', 'any_password');
+
+    await expect(promise).rejects.toThrow(
+      new InvalidParamError('loadUserByEmailRepository'),
     );
   });
 });
