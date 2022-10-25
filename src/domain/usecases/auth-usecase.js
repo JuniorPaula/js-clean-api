@@ -1,8 +1,9 @@
 const { MissingParamError, InvalidParamError } = require('../../utils/errors');
 
 class AuthUsecase {
-  constructor(loadUserByEmailRepository) {
+  constructor(loadUserByEmailRepository, encrypter) {
     this.loadUserByEmailRepository = loadUserByEmailRepository;
+    this.encrypter = encrypter;
   }
 
   async auth(email, password) {
@@ -25,6 +26,7 @@ class AuthUsecase {
       return null;
     }
 
+    await this.encrypter.compare(password, user.password);
     return null;
   }
 }

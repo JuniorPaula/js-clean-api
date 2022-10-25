@@ -2,6 +2,15 @@ const { MissingParamError, InvalidParamError } = require('../../utils/errors');
 const { AuthUsecase } = require('./auth-usecase');
 
 const makeSut = () => {
+  class EncrypterStub {
+    async compare(password, hashedPassword) {
+      this.password = password;
+      this.hashedPassword = hashedPassword;
+    }
+  }
+
+  const encrypterStub = new EncrypterStub();
+
   class LoadUserByEmailRepositoryStub {
     async load(email) {
       this.email = email;
@@ -10,12 +19,15 @@ const makeSut = () => {
   }
 
   const loadUserByEmailRepositoryStub = new LoadUserByEmailRepositoryStub();
-  loadUserByEmailRepositoryStub.user = {};
-  const sut = new AuthUsecase(loadUserByEmailRepositoryStub);
+  loadUserByEmailRepositoryStub.user = {
+    password: 'hashedPassword',
+  };
+  const sut = new AuthUsecase(loadUserByEmailRepositoryStub, encrypterStub);
 
   return {
     sut,
     loadUserByEmailRepositoryStub,
+    encrypterStub,
   };
 };
 
@@ -78,5 +90,15 @@ describe('AuthUsecase', () => {
     );
 
     expect(accessToken).toBeNull();
+  });
+
+  test('Should call Encrypter with correct valeus', async () => {
+    const { sut, loadUserByEmailRepositoryStub, encrypterStub } = makeSut();
+    await sut.auth('valid_email@mail.com', 'any_password');
+
+    expect(encrypterStub.password).toBe('any_password');
+    expect(encrypterStub.hashedPassword).toBe(
+      loadUserByEmailRepositoryStub.user.password,
+    );
   });
 });
