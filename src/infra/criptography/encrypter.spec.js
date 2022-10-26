@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt');
+const { MissingParamError } = require('../../utils/errors');
 const { Encrypter } = require('./encrypter');
 
 const makeSut = () => {
@@ -27,5 +28,14 @@ describe('Encrypter', () => {
 
     expect(bcrypt.value).toBe('any_value');
     expect(bcrypt.hash).toBe('hash');
+  });
+
+  test('Should throws if no params are provided', async () => {
+    const sut = makeSut();
+
+    await expect(sut.compare()).rejects.toThrow(new MissingParamError('value'));
+    await expect(sut.compare('any_value')).rejects.toThrow(
+      new MissingParamError('hash'),
+    );
   });
 });
