@@ -296,6 +296,22 @@ describe('AuthUsecase', () => {
     await expect(promise).rejects.toThrow();
   });
 
+  test('Should throws if UpdateAccessTokenRepository throws', async () => {
+    class UpdateAccessTokenRepositoryError {
+      update(userId, accessToken) {
+        this.userId = userId;
+        this.accessToken = accessToken;
+        throw new Error();
+      }
+    }
+    const updateAccessTokenRepository = new UpdateAccessTokenRepositoryError();
+    const sut = new AuthUsecase(updateAccessTokenRepository);
+
+    const promise = sut.auth('valid_email@mail.com', 'valid_password');
+
+    await expect(promise).rejects.toThrow();
+  });
+
   test('Should call UpdateAccessTokenRepository with correct values', async () => {
     const {
       sut,
