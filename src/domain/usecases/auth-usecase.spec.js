@@ -232,4 +232,19 @@ describe('AuthUsecase', () => {
 
     await expect(promise).rejects.toThrow();
   });
+
+  test('Should throws if TokenGenerator throws', async () => {
+    class TokenGeneratorError {
+      generate(userId) {
+        this.userId = userId;
+        throw new Error();
+      }
+    }
+    const tokenGenerator = new TokenGeneratorError();
+    const sut = new AuthUsecase(tokenGenerator);
+
+    const promise = sut.auth('valid_email@mail.com', 'valid_password');
+
+    await expect(promise).rejects.toThrow();
+  });
 });
