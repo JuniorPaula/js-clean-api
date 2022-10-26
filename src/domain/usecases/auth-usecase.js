@@ -32,7 +32,10 @@ class AuthUsecase {
     if (!this.tokenGenerator || !this.tokenGenerator.generate) {
       throw new MissingParamError('TokenGenerator');
     }
-    if (!this.updateAccessTokenRepository) {
+    if (
+      !this.updateAccessTokenRepository ||
+      !this.updateAccessTokenRepository.update
+    ) {
       throw new MissingParamError('UpdateAccessTokenRepository');
     }
 
