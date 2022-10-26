@@ -201,4 +201,19 @@ describe('AuthUsecase', () => {
     expect(accessToken).toBe(tokenGeneratorStub.accessToken);
     expect(accessToken).toBeTruthy();
   });
+
+  test('Should throws if LoadUserByEmailRepository throws', async () => {
+    class LoadUserByEmailRepositoryError {
+      load(email) {
+        this.email = email;
+        throw new Error();
+      }
+    }
+    const loadUserByEmail = new LoadUserByEmailRepositoryError();
+    const sut = new AuthUsecase(loadUserByEmail);
+
+    const promise = sut.auth('valid_email@mail.com', 'valid_password');
+
+    await expect(promise).rejects.toThrow();
+  });
 });
