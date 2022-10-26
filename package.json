@@ -25,6 +25,7 @@
     "prettier": "^2.7.1"
   },
   "dependencies": {
+    "bcrypt": "^5.1.0",
     "validator": "^13.7.0"
   }
 }
