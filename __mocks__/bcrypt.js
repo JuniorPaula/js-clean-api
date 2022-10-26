@@ -1,7 +1,11 @@
 module.exports = {
   isValid: true,
-  // eslint-disable-next-line no-unused-vars
+  value: '',
+  hash: '',
+
   async compare(value, hash) {
+    this.value = value;
+    this.hash = hash;
     return this.isValid;
   },
 };
