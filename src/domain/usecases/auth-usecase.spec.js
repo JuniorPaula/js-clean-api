@@ -216,4 +216,20 @@ describe('AuthUsecase', () => {
 
     await expect(promise).rejects.toThrow();
   });
+
+  test('Should throws if Encrypter throws', async () => {
+    class EncrypterError {
+      compare(password, hashedPassword) {
+        this.password = password;
+        this.hashedPassword = hashedPassword;
+        throw new Error();
+      }
+    }
+    const encrypter = new EncrypterError();
+    const sut = new AuthUsecase(encrypter);
+
+    const promise = sut.auth('valid_email@mail.com', 'valid_password');
+
+    await expect(promise).rejects.toThrow();
+  });
 });
