@@ -159,6 +159,23 @@ describe('AuthUsecase', () => {
     );
   });
 
+  test('Should throw if no UpdateAccessTokenRepository is provided', async () => {
+    const loadUserByEmailRepository = mockLoadUserByEmailRepository();
+    const encrypterStub = mockEncrypter();
+    const tokenGeneratorStub = mockTokenGenerator();
+    const sut = new AuthUsecase(
+      loadUserByEmailRepository,
+      encrypterStub,
+      tokenGeneratorStub,
+    );
+
+    const promise = sut.auth('any_email@mail.com', 'any_password');
+
+    await expect(promise).rejects.toThrow(
+      new MissingParamError('UpdateAccessTokenRepository'),
+    );
+  });
+
   test('Should return null if an invalid email is provided', async () => {
     const { sut, loadUserByEmailRepositoryStub } = makeSut();
     loadUserByEmailRepositoryStub.user = null;

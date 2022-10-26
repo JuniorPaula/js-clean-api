@@ -32,6 +32,9 @@ class AuthUsecase {
     if (!this.tokenGenerator || !this.tokenGenerator.generate) {
       throw new MissingParamError('TokenGenerator');
     }
+    if (!this.updateAccessTokenRepository) {
+      throw new MissingParamError('UpdateAccessTokenRepository');
+    }
 
     const user = await this.loadUserByEmailRepository.load(email);
 
