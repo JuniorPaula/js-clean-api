@@ -1,6 +1,16 @@
 const { MissingParamError } = require('../../utils/errors');
 const { AuthUsecase } = require('./auth-usecase');
 
+const mockUpdateAccesstokenRepository = () => {
+  class UpdateAccessTokenRepositoryStub {
+    async update(userId, accessToken) {
+      this.userId = userId;
+      this.accessToken = accessToken;
+    }
+  }
+  return new UpdateAccessTokenRepositoryStub();
+};
+
 const mockTokenGenerator = () => {
   class TokenGerenatorStub {
     async generate(userId) {
@@ -50,11 +60,13 @@ const makeSut = () => {
   const loadUserByEmailRepositoryStub = mockLoadUserByEmailRepository();
   const encrypterStub = mockEncrypter();
   const tokenGeneratorStub = mockTokenGenerator();
+  const updateAccessTokenRepositoryStub = mockUpdateAccesstokenRepository();
 
   const sut = new AuthUsecase(
     loadUserByEmailRepositoryStub,
     encrypterStub,
     tokenGeneratorStub,
+    updateAccessTokenRepositoryStub,
   );
 
   return {
@@ -62,6 +74,7 @@ const makeSut = () => {
     loadUserByEmailRepositoryStub,
     encrypterStub,
     tokenGeneratorStub,
+    updateAccessTokenRepositoryStub,
   };
 };
 
@@ -246,5 +259,24 @@ describe('AuthUsecase', () => {
     const promise = sut.auth('valid_email@mail.com', 'valid_password');
 
     await expect(promise).rejects.toThrow();
+  });
+
+  test('Should call UpdateAccessTokenRepository with correct values', async () => {
+    const {
+      sut,
+      loadUserByEmailRepositoryStub,
+      updateAccessTokenRepositoryStub,
+      tokenGeneratorStub,
+    } = makeSut();
+
+    await sut.auth('valid_email@mail.com', 'valid_password');
+
+    expect(updateAccessTokenRepositoryStub.userId).toBe(
+      loadUserByEmailRepositoryStub.user.id,
+    );
+
+    expect(updateAccessTokenRepositoryStub.accessToken).toBe(
+      tokenGeneratorStub.accessToken,
+    );
   });
 });
