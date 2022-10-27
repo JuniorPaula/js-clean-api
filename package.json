@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "bcrypt": "^5.1.0",
+    "jsonwebtoken": "^8.5.1",
     "validator": "^13.7.0"
   }
 }
