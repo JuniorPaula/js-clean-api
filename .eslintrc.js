@@ -14,5 +14,7 @@ module.exports = {
   parserOptions: {
     ecmaVersion: 'latest',
   },
-  rules: {},
+  rules: {
+    'jest/expect-expect': 'off',
+  },
 };
