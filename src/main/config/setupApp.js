@@ -1,10 +1,7 @@
+const { cors } = require('../middlewares/cors');
+
 const setupApp = (app) => {
-  app.use((req, res, next) => {
-    res.set('access-control-allow-origin', '*');
-    res.set('access-control-allow-methods', '*');
-    res.set('access-control-allow-headers', '*');
-    next();
-  });
+  app.use(cors);
 };
 
 module.exports = { setupApp };
