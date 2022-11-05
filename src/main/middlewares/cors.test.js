@@ -1,5 +1,5 @@
 const request = require('supertest');
-const { app } = require('../config/app');
+const app = require('../config/app');
 
 describe('#CORS Middleware', () => {
   test('Should enabled CORS', async () => {

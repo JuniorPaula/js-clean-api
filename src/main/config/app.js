@@ -5,4 +5,4 @@ const app = express();
 
 setupApp(app);
 
-module.exports = { app };
+module.exports = app;
