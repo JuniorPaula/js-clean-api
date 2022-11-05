@@ -7,13 +7,7 @@ const {
 let db;
 
 const makeSut = () => {
-  const userModel = db.collection('users');
-  const sut = new UpdateAccessTokenRepository(userModel);
-
-  return {
-    sut,
-    userModel,
-  };
+  return new UpdateAccessTokenRepository();
 };
 
 describe('UpdateAccessTokenRepository', () => {
@@ -31,35 +25,24 @@ describe('UpdateAccessTokenRepository', () => {
   });
 
   test('Should update the user with the given access token', async () => {
-    const { sut, userModel } = makeSut();
+    const sut = makeSut();
 
-    const res = await userModel.insertOne({
+    const res = await db.collection('users').insertOne({
       email: 'valid_email@mail.com',
     });
 
     await sut.update(res.insertedId, 'valid_token');
-    const updatedFakeUser = await userModel.findOne({ _id: res.insertedId });
+    const updatedFakeUser = await db
+      .collection('users')
+      .findOne({ _id: res.insertedId });
 
     expect(updatedFakeUser.accessToken).toBe('valid_token');
   });
 
-  test('Should throw id not userModel is provided', async () => {
-    const userModel = db.collection('users');
-    const sut = new UpdateAccessTokenRepository();
-
-    const res = await userModel.insertOne({
-      email: 'valid_email@mail.com',
-    });
-
-    const promise = sut.update(res.insertedId, 'valid_token');
-
-    await expect(promise).rejects.toThrow();
-  });
-
   test('Should throw id no params are provided', async () => {
-    const { sut, userModel } = makeSut();
+    const sut = makeSut();
 
-    const res = await userModel.insertOne({
+    const res = await db.collection('users').insertOne({
       email: 'valid_email@mail.com',
     });
 
