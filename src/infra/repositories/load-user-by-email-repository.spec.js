@@ -4,7 +4,7 @@ const {
   LoadUserByEmailRepository,
 } = require('./load-user-by-email-repository');
 
-let db;
+let userModel;
 
 const makeSut = () => {
   return new LoadUserByEmailRepository();
@@ -13,11 +13,11 @@ const makeSut = () => {
 describe('LoadUserByEmailRepository', () => {
   beforeAll(async () => {
     await MongoHelper.connect(process.env.MONGO_URL);
-    db = MongoHelper.db;
+    userModel = await MongoHelper.getCollection('users');
   });
 
   beforeEach(async () => {
-    await db.collection('users').deleteMany();
+    await userModel.deleteMany();
   });
 
   afterAll(async () => {
@@ -33,7 +33,7 @@ describe('LoadUserByEmailRepository', () => {
 
   test('Should return an user if user is found', async () => {
     const sut = makeSut();
-    await db.collection('users').insertOne({
+    await userModel.insertOne({
       email: 'valid_email@mail.com',
     });
 

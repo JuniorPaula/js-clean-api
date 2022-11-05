@@ -13,6 +13,10 @@ class MongoHelper {
   static async disconnect() {
     await this.client.close();
   }
+
+  static async getCollection(collectionName) {
+    return this.db.collection(collectionName);
+  }
 }
 
 module.exports = { MongoHelper };

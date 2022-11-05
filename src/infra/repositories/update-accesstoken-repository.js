@@ -10,8 +10,8 @@ class UpdateAccessTokenRepository {
     if (!accessToken) {
       throw new MissingParamError('accessToken');
     }
-    const db = await MongoHelper.db;
-    await db.collection('users').updateOne(
+    const userModel = await MongoHelper.getCollection('users');
+    await userModel.updateOne(
       {
         _id: userId,
       },
