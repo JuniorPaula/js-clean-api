@@ -75,7 +75,9 @@ describe('LoginController', () => {
     };
     const httpResponse = await sut.handle(httpRequest);
     expect(httpResponse.statusCode).toBe(400);
-    expect(httpResponse.body).toEqual(new MissingParamError('email'));
+    expect(httpResponse.body.error).toBe(
+      new MissingParamError('email').message,
+    );
   });
 
   test('Should return 400 if no password is provided', async () => {
@@ -87,7 +89,9 @@ describe('LoginController', () => {
     };
     const httpResponse = await sut.handle(httpRequest);
     expect(httpResponse.statusCode).toBe(400);
-    expect(httpResponse.body).toEqual(new MissingParamError('password'));
+    expect(httpResponse.body.error).toBe(
+      new MissingParamError('password').message,
+    );
   });
 
   test('Should call AuthUsecase with correct params', async () => {
@@ -116,7 +120,7 @@ describe('LoginController', () => {
 
     const httpResponse = await sut.handle(httpRequest);
     expect(httpResponse.statusCode).toBe(401);
-    expect(httpResponse.body).toEqual(new UnauthorizedError());
+    expect(httpResponse.body.error).toBe(new UnauthorizedError().message);
   });
 
   test('Should return 200 if valid credentials are provided', async () => {
@@ -139,7 +143,7 @@ describe('LoginController', () => {
 
     const httpResponse = await sut.handle();
     expect(httpResponse.statusCode).toBe(500);
-    expect(httpResponse.body).toEqual(new ServerError());
+    expect(httpResponse.body.error).toBe(new ServerError().message);
   });
 
   test('Should return 500 if HttpRequest has no body', async () => {
@@ -148,7 +152,7 @@ describe('LoginController', () => {
 
     const httpResponse = await sut.handle(httpRequest);
     expect(httpResponse.statusCode).toBe(500);
-    expect(httpResponse.body).toEqual(new ServerError());
+    expect(httpResponse.body.error).toBe(new ServerError().message);
   });
 
   test('Should return 500 if no authUsecase is provided', async () => {
@@ -162,7 +166,7 @@ describe('LoginController', () => {
 
     const httpResponse = await sut.handle(httpRequest);
     expect(httpResponse.statusCode).toBe(500);
-    expect(httpResponse.body).toEqual(new ServerError());
+    expect(httpResponse.body.error).toBe(new ServerError().message);
   });
 
   test('Should return 500 if authUsecase has no auth method', async () => {
@@ -178,7 +182,7 @@ describe('LoginController', () => {
 
     const httpResponse = await sut.handle(httpRequest);
     expect(httpResponse.statusCode).toBe(500);
-    expect(httpResponse.body).toEqual(new ServerError());
+    expect(httpResponse.body.error).toBe(new ServerError().message);
   });
 
   test('Should return 500 if AuthUsecase throws', async () => {
@@ -194,7 +198,7 @@ describe('LoginController', () => {
 
     const httpResponse = await sut.handle(httpRequest);
     expect(httpResponse.statusCode).toBe(500);
-    expect(httpResponse.body).toEqual(new ServerError());
+    expect(httpResponse.body.error).toEqual(new ServerError().message);
   });
 
   test('Should return 400 if invalid email is provided', async () => {
@@ -209,7 +213,9 @@ describe('LoginController', () => {
     };
     const httpResponse = await sut.handle(httpRequest);
     expect(httpResponse.statusCode).toBe(400);
-    expect(httpResponse.body).toEqual(new InvalidParamError('email'));
+    expect(httpResponse.body.error).toBe(
+      new InvalidParamError('email').message,
+    );
   });
 
   test('Should return 500 if EamailValidator is not provided', async () => {
@@ -225,7 +231,7 @@ describe('LoginController', () => {
 
     const httpResponse = await sut.handle(httpRequest);
     expect(httpResponse.statusCode).toBe(500);
-    expect(httpResponse.body).toEqual(new ServerError());
+    expect(httpResponse.body.error).toBe(new ServerError().message);
   });
 
   test('Should return 500 if EmailValidator has no isValid method', async () => {
@@ -241,7 +247,7 @@ describe('LoginController', () => {
 
     const httpResponse = await sut.handle(httpRequest);
     expect(httpResponse.statusCode).toBe(500);
-    expect(httpResponse.body).toEqual(new ServerError());
+    expect(httpResponse.body.error).toBe(new ServerError().message);
   });
 
   test('Should return 500 if EmailValidator throws', async () => {
@@ -258,7 +264,7 @@ describe('LoginController', () => {
 
     const httpResponse = await sut.handle(httpRequest);
     expect(httpResponse.statusCode).toBe(500);
-    expect(httpResponse.body).toEqual(new ServerError());
+    expect(httpResponse.body.error).toBe(new ServerError().message);
   });
 
   test('Should call EmailValidator with correct email', async () => {
