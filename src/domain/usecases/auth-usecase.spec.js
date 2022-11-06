@@ -247,7 +247,7 @@ describe('AuthUsecase', () => {
       await sut.auth('valid_email@mail.com', 'valid_password');
 
       expect(tokenGeneratorStub.userId).toBe(
-        loadUserByEmailRepositoryStub.user.id,
+        loadUserByEmailRepositoryStub.user._id,
       );
     });
 
@@ -331,7 +331,7 @@ describe('AuthUsecase', () => {
       await sut.auth('valid_email@mail.com', 'valid_password');
 
       expect(updateAccessTokenRepositoryStub.userId).toBe(
-        loadUserByEmailRepositoryStub.user.id,
+        loadUserByEmailRepositoryStub.user._id,
       );
 
       expect(updateAccessTokenRepositoryStub.accessToken).toBe(

@@ -43,7 +43,7 @@ describe('UpdateAccessTokenRepository', () => {
     const res = await userModel.insertOne({
       email: 'valid_email@mail.com',
     });
-    console.log(res);
+
     await expect(sut.update()).rejects.toThrow(new MissingParamError('userId'));
     await expect(sut.update(res.insertedId)).rejects.toThrow(
       new MissingParamError('accessToken'),
