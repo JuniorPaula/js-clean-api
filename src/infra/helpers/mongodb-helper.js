@@ -1,13 +1,13 @@
 const { MongoClient } = require('mongodb');
 
 class MongoHelper {
-  static async connect(uri, dbName) {
+  static async connect(uri) {
     this.client = await MongoClient.connect(uri, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
 
-    this.db = this.client.db(dbName);
+    this.db = this.client.db();
   }
 
   static async disconnect() {
