@@ -5,6 +5,10 @@ const {
 const { HttpResponse } = require('../../helpers/http-response');
 
 class SignupController {
+  constructor(createAccount) {
+    this.createAccount = createAccount;
+  }
+
   async handle(httpRequest) {
     try {
       const { username, email, password, confirmPassword } = httpRequest.body;
@@ -32,6 +36,8 @@ class SignupController {
           new InvalidParamError('confirmPassword'),
         );
       }
+
+      await this.createAccount.create({ username, email, password });
     } catch (error) {
       return HttpResponse.serverError();
     }
