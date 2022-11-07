@@ -47,6 +47,14 @@ class SignupController {
       if (!account) {
         return HttpResponse.forbiden(new EmailAlreadyExists());
       }
+
+      return {
+        statusCode: 200,
+        body: {
+          access_token: 'access_token',
+          username,
+        },
+      };
     } catch (error) {
       return HttpResponse.serverError();
     }

@@ -27,6 +27,13 @@ const mockCreateAccount = () => {
       this.username = username;
       this.email = email;
       this.password = password;
+
+      return {
+        id: 'valid_id',
+        username: 'valid_username',
+        email: 'valid_mail@mail.com',
+        password: '1234',
+      };
     }
   }
 
@@ -227,11 +234,13 @@ describe('Signup Controller', () => {
   });
 
   test('Should return 403 if CreateAccount returns null', async () => {
-    const { sut, createAccountSpy } = makeSut();
-
-    jest
-      .spyOn(createAccountSpy, 'create')
-      .mockReturnValueOnce(Promise.resolve(null));
+    class CreateAccountSpy {
+      async create() {
+        return null;
+      }
+    }
+    const createAccountSpyError = new CreateAccountSpy();
+    const sut = new SignupController(createAccountSpyError);
 
     const httpRequest = {
       body: {
@@ -244,5 +253,24 @@ describe('Signup Controller', () => {
 
     const httpResponse = await sut.handle(httpRequest);
     expect(httpResponse.body.error).toBe(new EmailAlreadyExists().message);
+  });
+
+  test('Should return 200 valid data are provided', async () => {
+    const { sut } = makeSut();
+    const httpRequest = {
+      body: {
+        username: 'valid_username',
+        email: 'valid_mail@mail.com',
+        password: '1234',
+        confirmPassword: '1234',
+      },
+    };
+
+    const httpResponse = await sut.handle(httpRequest);
+    expect(httpResponse.statusCode).toBe(200);
+    expect(httpResponse.body).toEqual({
+      access_token: 'access_token',
+      username: 'valid_username',
+    });
   });
 });
