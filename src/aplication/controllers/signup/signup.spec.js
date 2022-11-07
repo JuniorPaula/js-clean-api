@@ -1,0 +1,33 @@
+const { MissingParamError } = require('../../../utils/errors');
+const { HttpResponse } = require('../../helpers/http-response');
+
+class SignupController {
+  async handle(httpRequest) {
+    const { username } = httpRequest.body;
+
+    if (!username) {
+      return HttpResponse.badRequest(new MissingParamError('username'));
+    }
+  }
+}
+
+describe('Signup Controller', () => {
+  test('Should return 400 if no username is provided', async () => {
+    const sut = new SignupController();
+
+    const httpRequest = {
+      body: {
+        email: 'any_mail@mail.com',
+        password: '1234',
+        confirmPassword: '1234',
+      },
+    };
+
+    const httpResponse = await sut.handle(httpRequest);
+
+    expect(httpResponse.statusCode).toBe(400);
+    expect(httpResponse.body.error).toBe(
+      new MissingParamError('username').message,
+    );
+  });
+});
