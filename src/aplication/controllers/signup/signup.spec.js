@@ -159,8 +159,26 @@ describe('Signup Controller', () => {
     expect(createAccountSpy.password).toBe(httpRequest.body.password);
   });
 
-  test('Should return 500 if no createAccount is provided', async () => {
+  test('Should return 500 if no CreateAccount is provided', async () => {
     const sut = new SignupController();
+    const httpRequest = {
+      body: {
+        username: 'any_username',
+        email: 'any_mail@mail.com',
+        password: '1234',
+        confirmPassword: '1234',
+      },
+    };
+
+    const httpResponse = await sut.handle(httpRequest);
+    expect(httpResponse.statusCode).toBe(500);
+    expect(httpResponse.body.error).toBe(new ServerError().message);
+  });
+
+  test('Should return 500 if CreateAccount has no method create', async () => {
+    class CreateAccountSpy {}
+    const createAccountSpy = new CreateAccountSpy();
+    const sut = new SignupController(createAccountSpy);
     const httpRequest = {
       body: {
         username: 'any_username',
