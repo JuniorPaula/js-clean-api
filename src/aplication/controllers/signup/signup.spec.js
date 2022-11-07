@@ -306,6 +306,24 @@ describe('Signup Controller', () => {
     expect(httpResponse.body.error).toBe(new ServerError().message);
   });
 
+  test('Should return 500 if AuthenticationUsecase has no method create', async () => {
+    class AuthenticationUsecaseSpy {}
+    const authenticationUsecase = new AuthenticationUsecaseSpy();
+    const sut = new SignupController(authenticationUsecase);
+    const httpRequest = {
+      body: {
+        username: 'any_username',
+        email: 'any_mail@mail.com',
+        password: '1234',
+        confirmPassword: '1234',
+      },
+    };
+
+    const httpResponse = await sut.handle(httpRequest);
+    expect(httpResponse.statusCode).toBe(500);
+    expect(httpResponse.body.error).toBe(new ServerError().message);
+  });
+
   test('Should return 200 valid data are provided', async () => {
     const { sut } = makeSut();
     const httpRequest = {
