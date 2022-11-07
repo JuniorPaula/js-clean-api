@@ -2,6 +2,7 @@ const {
   MissingParamError,
   InvalidParamError,
 } = require('../../../utils/errors');
+const { ServerError } = require('../../errors');
 
 const { SignupController } = require('./signup');
 
@@ -108,5 +109,13 @@ describe('Signup Controller', () => {
     expect(httpResponse.body.error).toBe(
       new InvalidParamError('confirmPassword').message,
     );
+  });
+
+  test('Should return 500 if no HttpRequest is provided', async () => {
+    const { sut } = makeSut();
+
+    const httpResponse = await sut.handle();
+    expect(httpResponse.statusCode).toBe(500);
+    expect(httpResponse.body.error).toBe(new ServerError().message);
   });
 });
