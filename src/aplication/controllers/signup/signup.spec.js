@@ -1,4 +1,7 @@
-const { MissingParamError } = require('../../../utils/errors');
+const {
+  MissingParamError,
+  InvalidParamError,
+} = require('../../../utils/errors');
 const { HttpResponse } = require('../../helpers/http-response');
 
 class SignupController {
@@ -19,6 +22,10 @@ class SignupController {
 
     if (!confirmPassword) {
       return HttpResponse.badRequest(new MissingParamError('confirmPassword'));
+    }
+
+    if (password !== confirmPassword) {
+      return HttpResponse.badRequest(new InvalidParamError('confirmPassword'));
     }
   }
 }
@@ -97,6 +104,26 @@ describe('Signup Controller', () => {
     expect(httpResponse.statusCode).toBe(400);
     expect(httpResponse.body.error).toBe(
       new MissingParamError('confirmPassword').message,
+    );
+  });
+
+  test('Should return 400 if password not match with confirmPassword', async () => {
+    const sut = new SignupController();
+
+    const httpRequest = {
+      body: {
+        username: 'any_username',
+        email: 'any_mail@mail.com',
+        password: '1234',
+        confirmPassword: '123',
+      },
+    };
+
+    const httpResponse = await sut.handle(httpRequest);
+
+    expect(httpResponse.statusCode).toBe(400);
+    expect(httpResponse.body.error).toBe(
+      new InvalidParamError('confirmPassword').message,
     );
   });
 });
