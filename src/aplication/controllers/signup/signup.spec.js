@@ -118,4 +118,13 @@ describe('Signup Controller', () => {
     expect(httpResponse.statusCode).toBe(500);
     expect(httpResponse.body.error).toBe(new ServerError().message);
   });
+
+  test('Should return 500 if HttpRequest has no body', async () => {
+    const { sut } = makeSut();
+    const httpRequest = {};
+
+    const httpResponse = await sut.handle(httpRequest);
+    expect(httpResponse.statusCode).toBe(500);
+    expect(httpResponse.body.error).toBe(new ServerError().message);
+  });
 });
