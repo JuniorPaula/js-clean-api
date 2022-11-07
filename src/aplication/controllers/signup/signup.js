@@ -1,6 +1,7 @@
 const {
   MissingParamError,
   InvalidParamError,
+  EmailAlreadyExists,
 } = require('../../../utils/errors');
 const { HttpResponse } = require('../../helpers/http-response');
 
@@ -37,7 +38,15 @@ class SignupController {
         );
       }
 
-      await this.createAccount.create({ username, email, password });
+      const account = await this.createAccount.create({
+        username,
+        email,
+        password,
+      });
+
+      if (!account) {
+        return HttpResponse.forbiden(new EmailAlreadyExists());
+      }
     } catch (error) {
       return HttpResponse.serverError();
     }

@@ -17,20 +17,29 @@ class HttpResponse {
     };
   }
 
-  static serverError() {
-    return {
-      statusCode: 500,
-      body: {
-        error: new ServerError().message,
-      },
-    };
-  }
-
   static unauthorizedError() {
     return {
       statusCode: 401,
       body: {
         error: new UnauthorizedError().message,
+      },
+    };
+  }
+
+  static forbiden(error) {
+    return {
+      statusCode: 403,
+      body: {
+        error: error.message,
+      },
+    };
+  }
+
+  static serverError() {
+    return {
+      statusCode: 500,
+      body: {
+        error: new ServerError().message,
       },
     };
   }

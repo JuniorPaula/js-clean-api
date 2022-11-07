@@ -1,6 +1,7 @@
 const {
   MissingParamError,
   InvalidParamError,
+  EmailAlreadyExists,
 } = require('../../../utils/errors');
 const { ServerError } = require('../../errors');
 
@@ -223,5 +224,25 @@ describe('Signup Controller', () => {
     const httpResponse = await sut.handle(httpRequest);
     expect(httpResponse.statusCode).toBe(500);
     expect(httpResponse.body.error).toEqual(new ServerError().message);
+  });
+
+  test('Should return 403 if CreateAccount returns null', async () => {
+    const { sut, createAccountSpy } = makeSut();
+
+    jest
+      .spyOn(createAccountSpy, 'create')
+      .mockReturnValueOnce(Promise.resolve(null));
+
+    const httpRequest = {
+      body: {
+        username: 'any_username',
+        email: 'any_mail@mail.com',
+        password: '1234',
+        confirmPassword: '1234',
+      },
+    };
+
+    const httpResponse = await sut.handle(httpRequest);
+    expect(httpResponse.body.error).toBe(new EmailAlreadyExists().message);
   });
 });
