@@ -7,6 +7,23 @@ const { ServerError } = require('../../errors');
 
 const { SignupController } = require('./signup');
 
+const mockauthenticationUsecaseSpy = () => {
+  class AuthenticationUsecaseSpy {
+    async auth(email, password) {
+      this.email = email;
+      this.password = password;
+      return {
+        access_token: this.accessToken,
+        username: this.username,
+      };
+    }
+  }
+  const authenticationUsecaseSpy = new AuthenticationUsecaseSpy();
+  authenticationUsecaseSpy.accessToken = 'valid_accessToken';
+  authenticationUsecaseSpy.username = 'valid_username';
+  return authenticationUsecaseSpy;
+};
+
 const mockCreateAccountSpyError = () => {
   class CreateAccountSpy {
     async create({ username, email, password }) {
@@ -42,11 +59,13 @@ const mockCreateAccount = () => {
 
 const makeSut = () => {
   const createAccountSpy = mockCreateAccount();
-  const sut = new SignupController(createAccountSpy);
+  const authenticationUsecaseSpy = mockauthenticationUsecaseSpy();
+  const sut = new SignupController(createAccountSpy, authenticationUsecaseSpy);
 
   return {
     sut,
     createAccountSpy,
+    authenticationUsecaseSpy,
   };
 };
 
@@ -253,6 +272,22 @@ describe('Signup Controller', () => {
 
     const httpResponse = await sut.handle(httpRequest);
     expect(httpResponse.body.error).toBe(new EmailAlreadyExists().message);
+  });
+
+  test('Should call AuthenticationUsecase with correct params', async () => {
+    const { sut, authenticationUsecaseSpy } = makeSut();
+    const httpRequest = {
+      body: {
+        username: 'any_username',
+        email: 'any_mail@mail.com',
+        password: '1234',
+        confirmPassword: '1234',
+      },
+    };
+
+    await sut.handle(httpRequest);
+    expect(authenticationUsecaseSpy.email).toBe(httpRequest.body.email);
+    expect(authenticationUsecaseSpy.password).toBe(httpRequest.body.password);
   });
 
   test('Should return 200 valid data are provided', async () => {

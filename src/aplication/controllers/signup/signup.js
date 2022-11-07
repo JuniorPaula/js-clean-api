@@ -6,8 +6,9 @@ const {
 const { HttpResponse } = require('../../helpers/http-response');
 
 class SignupController {
-  constructor(createAccount) {
+  constructor(createAccount, authenticationUsecase) {
     this.createAccount = createAccount;
+    this.authenticationUsecase = authenticationUsecase;
   }
 
   async handle(httpRequest) {
@@ -47,6 +48,8 @@ class SignupController {
       if (!account) {
         return HttpResponse.forbiden(new EmailAlreadyExists());
       }
+
+      await this.authenticationUsecase.auth(email, password);
 
       return {
         statusCode: 200,
