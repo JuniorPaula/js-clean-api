@@ -368,7 +368,7 @@ describe('Signup Controller', () => {
     const httpResponse = await sut.handle(httpRequest);
     expect(httpResponse.statusCode).toBe(200);
     expect(httpResponse.body).toEqual({
-      access_token: 'access_token',
+      access_token: 'valid_accessToken',
       username: 'valid_username',
     });
   });

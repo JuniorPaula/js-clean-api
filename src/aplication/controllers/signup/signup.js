@@ -49,15 +49,12 @@ class SignupController {
         return HttpResponse.forbiden(new EmailAlreadyExists());
       }
 
-      await this.authenticationUsecase.auth(email, password);
+      const autheticationParams = await this.authenticationUsecase.auth(
+        email,
+        password,
+      );
 
-      return {
-        statusCode: 200,
-        body: {
-          access_token: 'access_token',
-          username,
-        },
-      };
+      return HttpResponse.ok(autheticationParams);
     } catch (error) {
       return HttpResponse.serverError();
     }
