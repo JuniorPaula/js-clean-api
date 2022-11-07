@@ -6,6 +6,20 @@ const { ServerError } = require('../../errors');
 
 const { SignupController } = require('./signup');
 
+const mockCreateAccountSpyError = () => {
+  class CreateAccountSpy {
+    async create({ username, email, password }) {
+      this.username = username;
+      this.email = email;
+      this.password = password;
+
+      throw new Error();
+    }
+  }
+
+  return new CreateAccountSpy();
+};
+
 const mockCreateAccount = () => {
   class CreateAccountSpy {
     async create({ username, email, password }) {
@@ -191,5 +205,23 @@ describe('Signup Controller', () => {
     const httpResponse = await sut.handle(httpRequest);
     expect(httpResponse.statusCode).toBe(500);
     expect(httpResponse.body.error).toBe(new ServerError().message);
+  });
+
+  test('Should return 500 if CreateAccount throws', async () => {
+    const createAccountSpyError = mockCreateAccountSpyError();
+    const sut = new SignupController(createAccountSpyError);
+
+    const httpRequest = {
+      body: {
+        username: 'any_username',
+        email: 'any_mail@mail.com',
+        password: '1234',
+        confirmPassword: '1234',
+      },
+    };
+
+    const httpResponse = await sut.handle(httpRequest);
+    expect(httpResponse.statusCode).toBe(500);
+    expect(httpResponse.body.error).toEqual(new ServerError().message);
   });
 });
