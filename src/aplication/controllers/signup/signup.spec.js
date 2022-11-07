@@ -5,9 +5,17 @@ const {
 
 const { SignupController } = require('./signup');
 
+const makeSut = () => {
+  const sut = new SignupController();
+
+  return {
+    sut,
+  };
+};
+
 describe('Signup Controller', () => {
   test('Should return 400 if no username is provided', async () => {
-    const sut = new SignupController();
+    const { sut } = makeSut();
 
     const httpRequest = {
       body: {
@@ -26,7 +34,7 @@ describe('Signup Controller', () => {
   });
 
   test('Should return 400 if no email is provided', async () => {
-    const sut = new SignupController();
+    const { sut } = makeSut();
 
     const httpRequest = {
       body: {
@@ -45,7 +53,7 @@ describe('Signup Controller', () => {
   });
 
   test('Should return 400 if no password is provided', async () => {
-    const sut = new SignupController();
+    const { sut } = makeSut();
 
     const httpRequest = {
       body: {
@@ -64,7 +72,7 @@ describe('Signup Controller', () => {
   });
 
   test('Should return 400 if no confirmPassword is provided', async () => {
-    const sut = new SignupController();
+    const { sut } = makeSut();
 
     const httpRequest = {
       body: {
@@ -83,7 +91,7 @@ describe('Signup Controller', () => {
   });
 
   test('Should return 400 if password not match with confirmPassword', async () => {
-    const sut = new SignupController();
+    const { sut } = makeSut();
 
     const httpRequest = {
       body: {
