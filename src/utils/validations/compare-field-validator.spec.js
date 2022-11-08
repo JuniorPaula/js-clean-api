@@ -27,4 +27,15 @@ describe('CompareFieldValidator', () => {
 
     expect(error).toEqual(new InvalidParamError('fieldToCompare').message);
   });
+
+  test('Should not return an error if validation succeeds', () => {
+    const sut = makeSut();
+
+    const error = sut.validate({
+      field: 'any_value',
+      fieldToCompare: 'any_value',
+    });
+
+    expect(error).toBeFalsy();
+  });
 });
