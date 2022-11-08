@@ -446,4 +446,22 @@ describe('Signup Controller', () => {
     expect(httpResponse.statusCode).toBe(500);
     expect(httpResponse.body.error).toBe(new ServerError().message);
   });
+
+  test('Should return 500 if Validator has no method create', async () => {
+    class ValidatorSpy {}
+    const validatorSpy = new ValidatorSpy();
+    const sut = new SignupController(validatorSpy);
+    const httpRequest = {
+      body: {
+        username: 'any_username',
+        email: 'any_mail@mail.com',
+        password: '1234',
+        confirmPassword: '1234',
+      },
+    };
+
+    const httpResponse = await sut.handle(httpRequest);
+    expect(httpResponse.statusCode).toBe(500);
+    expect(httpResponse.body.error).toBe(new ServerError().message);
+  });
 });
