@@ -12,9 +12,13 @@ class CompareFieldValidator {
   }
 }
 
+const makeSut = () => {
+  return new CompareFieldValidator('field', 'fieldToCompare');
+};
+
 describe('CompareFieldValidator', () => {
   test('Should return InvalidParamsError if validation fails', () => {
-    const sut = new CompareFieldValidator('field', 'fieldToCompare');
+    const sut = makeSut();
 
     const error = sut.validate({
       field: 'any_value',
