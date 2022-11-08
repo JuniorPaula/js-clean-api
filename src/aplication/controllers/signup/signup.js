@@ -14,6 +14,12 @@ class SignupController {
 
   async handle(httpRequest) {
     try {
+      const error = this.validator.validate(httpRequest.body);
+
+      if (error) {
+        return HttpResponse.badRequest(new MissingParamError(error));
+      }
+
       const { username, email, password, confirmPassword } = httpRequest.body;
 
       if (!username) {
@@ -54,7 +60,6 @@ class SignupController {
         email,
         password,
       );
-      this.validator.validate(httpRequest.body);
 
       return HttpResponse.ok(autheticationParams);
     } catch (error) {

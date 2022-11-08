@@ -285,13 +285,9 @@ describe('Signup Controller', () => {
   });
 
   test('Should return 403 if CreateAccount returns null', async () => {
-    class CreateAccountSpy {
-      async create() {
-        return null;
-      }
-    }
-    const createAccountSpyError = new CreateAccountSpy();
-    const sut = new SignupController(createAccountSpyError);
+    const { sut, createAccountSpy } = makeSut();
+
+    jest.spyOn(createAccountSpy, 'create').mockReturnValueOnce(null);
 
     const httpRequest = {
       body: {
@@ -410,5 +406,28 @@ describe('Signup Controller', () => {
     expect(validatorSpy.email).toBe(httpRequest.body.email);
     expect(validatorSpy.password).toBe(httpRequest.body.password);
     expect(validatorSpy.confirmPassword).toBe(httpRequest.body.confirmPassword);
+  });
+
+  test('Should return 400 Validator return an error', async () => {
+    const { sut, validatorSpy } = makeSut();
+    jest
+      .spyOn(validatorSpy, 'validate')
+      .mockReturnValueOnce(new Error('any_field').message);
+
+    const httpRequest = {
+      body: {
+        username: 'valid_username',
+        email: 'valid_mail@mail.com',
+        password: '1234',
+        confirmPassword: '1234',
+      },
+    };
+
+    const httpResponse = await sut.handle(httpRequest);
+
+    expect(httpResponse.statusCode).toBe(400);
+    expect(httpResponse.body.error).toBe(
+      new MissingParamError('any_field').message,
+    );
   });
 });
