@@ -7,6 +7,20 @@ const { ServerError } = require('../../errors');
 
 const { SignupController } = require('./signup');
 
+const mockValidator = () => {
+  class ValidatorSpy {
+    validate(input) {
+      this.username = input.username;
+      this.email = input.email;
+      this.password = input.password;
+      this.confirmPassword = input.confirmPassword;
+      return null;
+    }
+  }
+
+  return new ValidatorSpy();
+};
+
 const mockauthenticationUsecaseSpy = () => {
   class AuthenticationUsecaseSpy {
     async auth(email, password) {
@@ -72,12 +86,18 @@ const mockCreateAccount = () => {
 const makeSut = () => {
   const createAccountSpy = mockCreateAccount();
   const authenticationUsecaseSpy = mockauthenticationUsecaseSpy();
-  const sut = new SignupController(createAccountSpy, authenticationUsecaseSpy);
+  const validatorSpy = mockValidator();
+  const sut = new SignupController(
+    createAccountSpy,
+    authenticationUsecaseSpy,
+    validatorSpy,
+  );
 
   return {
     sut,
     createAccountSpy,
     authenticationUsecaseSpy,
+    validatorSpy,
   };
 };
 
@@ -371,5 +391,24 @@ describe('Signup Controller', () => {
       access_token: 'valid_accessToken',
       username: 'valid_username',
     });
+  });
+
+  test('Should call Validator with correct values', async () => {
+    const { sut, validatorSpy } = makeSut();
+    const httpRequest = {
+      body: {
+        username: 'valid_username',
+        email: 'valid_mail@mail.com',
+        password: '1234',
+        confirmPassword: '1234',
+      },
+    };
+
+    await sut.handle(httpRequest);
+
+    expect(validatorSpy.username).toBe(httpRequest.body.username);
+    expect(validatorSpy.email).toBe(httpRequest.body.email);
+    expect(validatorSpy.password).toBe(httpRequest.body.password);
+    expect(validatorSpy.confirmPassword).toBe(httpRequest.body.confirmPassword);
   });
 });

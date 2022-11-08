@@ -6,9 +6,10 @@ const {
 const { HttpResponse } = require('../../helpers/http-response');
 
 class SignupController {
-  constructor(createAccount, authenticationUsecase) {
+  constructor(createAccount, authenticationUsecase, validator) {
     this.createAccount = createAccount;
     this.authenticationUsecase = authenticationUsecase;
+    this.validator = validator;
   }
 
   async handle(httpRequest) {
@@ -53,6 +54,7 @@ class SignupController {
         email,
         password,
       );
+      this.validator.validate(httpRequest.body);
 
       return HttpResponse.ok(autheticationParams);
     } catch (error) {
