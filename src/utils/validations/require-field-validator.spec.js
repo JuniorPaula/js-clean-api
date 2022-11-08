@@ -18,4 +18,11 @@ describe('RequireFieldValidator', () => {
 
     expect(error).toEqual(new MissingParamError('field').message);
   });
+
+  test('Should not return an error if validation succeeds', async () => {
+    const sut = new RequireFieldValidator('field');
+    const error = sut.validate({ field: 'any_name' });
+
+    expect(error).toBeFalsy();
+  });
 });
