@@ -12,13 +12,22 @@ const mockEmailValidation = () => {
   return new EmailValidationSpy();
 };
 
+const makeSut = () => {
+  const emailValidationSpy = mockEmailValidation();
+  const sut = new EmailValidation('email', emailValidationSpy);
+
+  return {
+    sut,
+    emailValidationSpy,
+  };
+};
+
 describe('EmailValidation', () => {
   test('Should return an error if EmailValidator return false', () => {
-    const emailValidationSpy = mockEmailValidation();
+    const { sut, emailValidationSpy } = makeSut();
 
     jest.spyOn(emailValidationSpy, 'validate').mockReturnValueOnce(false);
 
-    const sut = new EmailValidation('email', emailValidationSpy);
     const error = sut.validate({ email: 'invalid_email@mail.com' });
 
     expect(error).toEqual(new InvalidParamError('email').message);
