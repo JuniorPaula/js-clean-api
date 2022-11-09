@@ -1,4 +1,4 @@
-const { UnauthorizedError, ServerError } = require('../errors');
+const { UnauthorizedError, ServerError } = require('../../utils/errors');
 
 class HttpResponse {
   static ok(data) {

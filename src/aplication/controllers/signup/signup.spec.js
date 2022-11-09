@@ -1,8 +1,8 @@
 const {
   MissingParamError,
   EmailAlreadyExists,
+  ServerError,
 } = require('../../../utils/errors');
-const { ServerError } = require('../../errors');
 
 const { SignupController } = require('./signup');
 
