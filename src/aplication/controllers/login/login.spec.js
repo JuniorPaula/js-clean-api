@@ -6,6 +6,19 @@ const {
 } = require('../../../utils/errors');
 const { LoginController } = require('./login');
 
+const mockValidator = () => {
+  class ValidatorSpy {
+    validate(input) {
+      this.email = input.email;
+      this.password = input.password;
+
+      return null;
+    }
+  }
+
+  return new ValidatorSpy();
+};
+
 const mockAuthUsecaseError = () => {
   class AuthUsecaseSpy {
     async auth() {
@@ -54,15 +67,20 @@ const mockEmailValidatorSpyError = () => {
 
 const makeSut = () => {
   const authUsecaseSpy = mockAuthUsecase();
-
   const emailValidatorSpy = mockEmailValidator();
+  const validatorSpy = mockValidator();
 
-  const sut = new LoginController(authUsecaseSpy, emailValidatorSpy);
+  const sut = new LoginController(
+    authUsecaseSpy,
+    emailValidatorSpy,
+    validatorSpy,
+  );
 
   return {
     sut,
     authUsecaseSpy,
     emailValidatorSpy,
+    validatorSpy,
   };
 };
 
@@ -279,5 +297,20 @@ describe('LoginController', () => {
 
     await sut.handle(httpRequest);
     expect(emailValidatorSpy.email).toBe(httpRequest.body.email);
+  });
+
+  test('Should call Validator with correct values', async () => {
+    const { sut, validatorSpy } = makeSut();
+    const httpRequest = {
+      body: {
+        email: 'valid_mail@mail.com',
+        password: '1234',
+      },
+    };
+
+    await sut.handle(httpRequest);
+
+    expect(validatorSpy.email).toBe(httpRequest.body.email);
+    expect(validatorSpy.password).toBe(httpRequest.body.password);
   });
 });

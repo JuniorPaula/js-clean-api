@@ -5,13 +5,16 @@ const {
 const { HttpResponse } = require('../../helpers/http-response');
 
 class LoginController {
-  constructor(authUsecase, emailValidator) {
+  constructor(authUsecase, emailValidator, validator) {
     this.authUsecase = authUsecase;
     this.emailValidator = emailValidator;
+    this.validator = validator;
   }
 
   async handle(httpRequest) {
     try {
+      this.validator.validate(httpRequest.body);
+
       const { email, password } = httpRequest.body;
       if (!email) {
         return HttpResponse.badRequest(new MissingParamError('email'));
