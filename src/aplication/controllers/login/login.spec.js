@@ -216,5 +216,21 @@ describe('LoginController', () => {
       expect(httpResponse.statusCode).toBe(500);
       expect(httpResponse.body.error).toBe(new ServerError().message);
     });
+
+    test('Should return 500 if Validator has no methos validate', async () => {
+      class ValidatorSpy {}
+      const validatorSpy = new ValidatorSpy();
+      const sut = new LoginController(validatorSpy);
+      const httpRequest = {
+        body: {
+          email: 'valid_mail@mail.com',
+          password: '1234',
+        },
+      };
+
+      const httpResponse = await sut.handle(httpRequest);
+      expect(httpResponse.statusCode).toBe(500);
+      expect(httpResponse.body.error).toBe(new ServerError().message);
+    });
   });
 });

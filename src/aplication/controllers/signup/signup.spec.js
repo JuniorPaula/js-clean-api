@@ -359,7 +359,7 @@ describe('Signup Controller', () => {
       expect(httpResponse.body.error).toBe(new ServerError().message);
     });
 
-    test('Should return 500 if Validator has no method create', async () => {
+    test('Should return 500 if Validator has no method validate', async () => {
       class ValidatorSpy {}
       const validatorSpy = new ValidatorSpy();
       const sut = new SignupController(validatorSpy);
