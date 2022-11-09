@@ -12,10 +12,19 @@ const mockValidation = () => {
   return new ValidationsSpy();
 };
 
+const makeSut = () => {
+  const validationsSpy = [mockValidation(), mockValidation()];
+  const sut = new ValidationComposite(validationsSpy);
+
+  return {
+    sut,
+    validationsSpy,
+  };
+};
+
 describe('ValidationComposite', () => {
   test('Should return an error if any validation fails', () => {
-    const validationsSpy = [mockValidation(), mockValidation()];
-    const sut = new ValidationComposite(validationsSpy);
+    const { sut, validationsSpy } = makeSut();
 
     jest
       .spyOn(validationsSpy[0], 'validate')
