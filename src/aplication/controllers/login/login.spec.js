@@ -202,5 +202,19 @@ describe('LoginController', () => {
         new MissingParamError('any_field').message,
       );
     });
+
+    test('Should return 500 if no Validator is provided', async () => {
+      const sut = new LoginController();
+      const httpRequest = {
+        body: {
+          email: 'valid_mail@mail.com',
+          password: '1234',
+        },
+      };
+
+      const httpResponse = await sut.handle(httpRequest);
+      expect(httpResponse.statusCode).toBe(500);
+      expect(httpResponse.body.error).toBe(new ServerError().message);
+    });
   });
 });
