@@ -51,4 +51,12 @@ describe('EmailValidation', () => {
 
     expect(error).toBe(new ServerError().message);
   });
+
+  test('Should return a MissingParamsError if no EmailValidator is provided', () => {
+    const sut = new EmailValidation();
+
+    const error = sut.validate({ email: 'valid_email@mail.com' });
+
+    expect(error).toBe(new ServerError().message);
+  });
 });
