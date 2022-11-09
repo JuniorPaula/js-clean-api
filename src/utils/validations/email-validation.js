@@ -1,4 +1,4 @@
-const { InvalidParamError } = require('../errors');
+const { InvalidParamError, ServerError } = require('../errors');
 
 class EmailValidation {
   constructor(fieldName, emailValidator) {
@@ -7,9 +7,13 @@ class EmailValidation {
   }
 
   validate(input) {
-    const isValid = this.emailValidator.validate(input[this.fieldName]);
-    if (!isValid) {
-      return new InvalidParamError(this.fieldName).message;
+    try {
+      const isValid = this.emailValidator.validate(input[this.fieldName]);
+      if (!isValid) {
+        return new InvalidParamError(this.fieldName).message;
+      }
+    } catch (error) {
+      return new ServerError().message;
     }
   }
 }

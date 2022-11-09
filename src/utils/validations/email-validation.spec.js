@@ -1,4 +1,4 @@
-const { InvalidParamError } = require('../errors');
+const { InvalidParamError, ServerError } = require('../errors');
 const { EmailValidation } = require('./email-validation');
 
 const mockEmailValidation = () => {
@@ -41,5 +41,14 @@ describe('EmailValidation', () => {
     sut.validate({ email: 'valid_email@mail.com' });
 
     expect(isValidSpy).toHaveBeenCalledWith('valid_email@mail.com');
+  });
+
+  test('Should return a MissingParamsError if no fieldName is provided', () => {
+    const { emailValidationSpy } = makeSut();
+    const sut = new EmailValidation(emailValidationSpy);
+
+    const error = sut.validate({ email: 'valid_email@mail.com' });
+
+    expect(error).toBe(new ServerError().message);
   });
 });
