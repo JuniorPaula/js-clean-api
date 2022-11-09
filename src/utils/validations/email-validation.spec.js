@@ -1,4 +1,5 @@
 const { InvalidParamError } = require('../errors');
+const { EmailValidation } = require('./email-validation');
 
 const mockEmailValidation = () => {
   class EmailValidationSpy {
@@ -13,20 +14,6 @@ const mockEmailValidation = () => {
 
 describe('EmailValidation', () => {
   test('Should return an error if EmailValidator return false', () => {
-    class EmailValidation {
-      constructor(fieldName, emailValidator) {
-        this.fieldName = fieldName;
-        this.emailValidator = emailValidator;
-      }
-
-      validate(input) {
-        const isValid = this.emailValidator.validate(input[this.fieldName]);
-        if (!isValid) {
-          return new InvalidParamError(this.fieldName).message;
-        }
-      }
-    }
-
     const emailValidationSpy = mockEmailValidation();
 
     jest.spyOn(emailValidationSpy, 'validate').mockReturnValueOnce(false);
