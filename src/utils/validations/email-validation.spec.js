@@ -43,7 +43,7 @@ describe('EmailValidation', () => {
     expect(isValidSpy).toHaveBeenCalledWith('valid_email@mail.com');
   });
 
-  test('Should return a MissingParamsError if no fieldName is provided', () => {
+  test('Should return a ServerError if no fieldName is provided', () => {
     const { emailValidationSpy } = makeSut();
     const sut = new EmailValidation(emailValidationSpy);
 
@@ -52,8 +52,18 @@ describe('EmailValidation', () => {
     expect(error).toBe(new ServerError().message);
   });
 
-  test('Should return a MissingParamsError if no EmailValidator is provided', () => {
+  test('Should return a ServerError if no EmailValidator is provided', () => {
     const sut = new EmailValidation();
+
+    const error = sut.validate({ email: 'valid_email@mail.com' });
+
+    expect(error).toBe(new ServerError().message);
+  });
+
+  test('Should return a ServerError if EmailValidator has no method validate', () => {
+    class EmailValidatorSpy {}
+    const emailValidationSpy = new EmailValidatorSpy();
+    const sut = new EmailValidation('email', emailValidationSpy);
 
     const error = sut.validate({ email: 'valid_email@mail.com' });
 
