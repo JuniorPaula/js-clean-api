@@ -1,3 +1,4 @@
+const { MissingParamError } = require('../../../utils/errors');
 const { HttpResponse } = require('../../helpers/http-response');
 
 class LoginController {
@@ -8,7 +9,10 @@ class LoginController {
 
   async handle(httpRequest) {
     try {
-      this.validator.validate(httpRequest.body);
+      const error = this.validator.validate(httpRequest.body);
+      if (error) {
+        return HttpResponse.badRequest(new MissingParamError(error));
+      }
 
       const { email, password } = httpRequest.body;
 

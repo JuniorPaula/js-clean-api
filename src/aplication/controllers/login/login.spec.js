@@ -1,4 +1,8 @@
-const { UnauthorizedError, ServerError } = require('../../../utils/errors');
+const {
+  UnauthorizedError,
+  ServerError,
+  MissingParamError,
+} = require('../../../utils/errors');
 const { LoginController } = require('./login');
 
 const mockValidator = () => {
@@ -175,6 +179,28 @@ describe('LoginController', () => {
 
       expect(validatorSpy.email).toBe(httpRequest.body.email);
       expect(validatorSpy.password).toBe(httpRequest.body.password);
+    });
+
+    test('Should return 400 if Validator return an error', async () => {
+      const { sut, validatorSpy } = makeSut();
+
+      jest
+        .spyOn(validatorSpy, 'validate')
+        .mockReturnValueOnce(new Error('any_field').message);
+
+      const httpRequest = {
+        body: {
+          email: 'valid_mail@mail.com',
+          password: '1234',
+        },
+      };
+
+      const httpResponse = await sut.handle(httpRequest);
+
+      expect(httpResponse.statusCode).toBe(400);
+      expect(httpResponse.body.error).toBe(
+        new MissingParamError('any_field').message,
+      );
     });
   });
 });
