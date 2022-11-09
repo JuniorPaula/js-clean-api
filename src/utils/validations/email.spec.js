@@ -9,7 +9,7 @@ jest.mock('validator', () => ({
 
 const validator = require('validator');
 const { MissingParamError } = require('../errors');
-const { EmailValidator } = require('./email-validator');
+const { EmailValidator } = require('./email');
 
 const makeSut = () => {
   return new EmailValidator();
