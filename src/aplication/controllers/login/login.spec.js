@@ -1,9 +1,4 @@
-const {
-  InvalidParamError,
-  MissingParamError,
-  UnauthorizedError,
-  ServerError,
-} = require('../../../utils/errors');
+const { UnauthorizedError, ServerError } = require('../../../utils/errors');
 const { LoginController } = require('./login');
 
 const mockValidator = () => {
@@ -41,78 +36,20 @@ const mockAuthUsecase = () => {
   return authUsecaseSpy;
 };
 
-const mockEmailValidator = () => {
-  class EmailValidatorSpy {
-    isValid(email) {
-      this.email = email;
-      return this.isEmailValid;
-    }
-  }
-
-  const emailValidatorSpy = new EmailValidatorSpy();
-  emailValidatorSpy.isEmailValid = true;
-  return emailValidatorSpy;
-};
-
-const mockEmailValidatorSpyError = () => {
-  class EmailValidatorSpy {
-    // eslint-disable-next-line no-unused-vars
-    isValid(email) {
-      throw new Error();
-    }
-  }
-
-  return new EmailValidatorSpy();
-};
-
 const makeSut = () => {
   const authUsecaseSpy = mockAuthUsecase();
-  const emailValidatorSpy = mockEmailValidator();
   const validatorSpy = mockValidator();
 
-  const sut = new LoginController(
-    authUsecaseSpy,
-    emailValidatorSpy,
-    validatorSpy,
-  );
+  const sut = new LoginController(authUsecaseSpy, validatorSpy);
 
   return {
     sut,
     authUsecaseSpy,
-    emailValidatorSpy,
     validatorSpy,
   };
 };
 
 describe('LoginController', () => {
-  test('Should return 400 if no email is provided', async () => {
-    const { sut } = makeSut();
-    const httpRequest = {
-      body: {
-        password: 'any_password',
-      },
-    };
-    const httpResponse = await sut.handle(httpRequest);
-    expect(httpResponse.statusCode).toBe(400);
-    expect(httpResponse.body.error).toBe(
-      new MissingParamError('email').message,
-    );
-  });
-
-  test('Should return 400 if no password is provided', async () => {
-    const { sut } = makeSut();
-    const httpRequest = {
-      body: {
-        email: 'any_email@mail.com',
-      },
-    };
-    const httpResponse = await sut.handle(httpRequest);
-    expect(httpResponse.statusCode).toBe(400);
-    expect(httpResponse.body.error).toBe(
-      new MissingParamError('password').message,
-    );
-  });
-
   test('Should call AuthUsecase with correct params', async () => {
     const { sut, authUsecaseSpy } = makeSut();
     const httpRequest = {
@@ -218,85 +155,6 @@ describe('LoginController', () => {
     const httpResponse = await sut.handle(httpRequest);
     expect(httpResponse.statusCode).toBe(500);
     expect(httpResponse.body.error).toEqual(new ServerError().message);
-  });
-
-  test('Should return 400 if invalid email is provided', async () => {
-    const { sut, emailValidatorSpy } = makeSut();
-    emailValidatorSpy.isEmailValid = false;
-
-    const httpRequest = {
-      body: {
-        email: 'invalid@mail.com',
-        password: 'any_password',
-      },
-    };
-    const httpResponse = await sut.handle(httpRequest);
-    expect(httpResponse.statusCode).toBe(400);
-    expect(httpResponse.body.error).toBe(
-      new InvalidParamError('email').message,
-    );
-  });
-
-  test('Should return 500 if EamailValidator is not provided', async () => {
-    const emailValidatorSpy = mockEmailValidator();
-    const sut = new LoginController(emailValidatorSpy);
-
-    const httpRequest = {
-      body: {
-        email: 'any_email@mail.com',
-        password: 'any_password',
-      },
-    };
-
-    const httpResponse = await sut.handle(httpRequest);
-    expect(httpResponse.statusCode).toBe(500);
-    expect(httpResponse.body.error).toBe(new ServerError().message);
-  });
-
-  test('Should return 500 if EmailValidator has no isValid method', async () => {
-    const authUsecaseSpy = mockAuthUsecase();
-    const sut = new LoginController(authUsecaseSpy, {});
-
-    const httpRequest = {
-      body: {
-        email: 'any_email@mail.com',
-        password: 'any_password',
-      },
-    };
-
-    const httpResponse = await sut.handle(httpRequest);
-    expect(httpResponse.statusCode).toBe(500);
-    expect(httpResponse.body.error).toBe(new ServerError().message);
-  });
-
-  test('Should return 500 if EmailValidator throws', async () => {
-    const authUsecaseSpy = mockAuthUsecase();
-    const emailValidatorSpyError = mockEmailValidatorSpyError();
-    const sut = new LoginController(authUsecaseSpy, emailValidatorSpyError);
-
-    const httpRequest = {
-      body: {
-        email: 'any_email@mail.com',
-        password: 'any_password',
-      },
-    };
-
-    const httpResponse = await sut.handle(httpRequest);
-    expect(httpResponse.statusCode).toBe(500);
-    expect(httpResponse.body.error).toBe(new ServerError().message);
-  });
-
-  test('Should call EmailValidator with correct email', async () => {
-    const { sut, emailValidatorSpy } = makeSut();
-    const httpRequest = {
-      body: {
-        email: 'any_email',
-        password: 'any_password',
-      },
-    };
-
-    await sut.handle(httpRequest);
-    expect(emailValidatorSpy.email).toBe(httpRequest.body.email);
   });
 
   test('Should call Validator with correct values', async () => {
