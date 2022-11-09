@@ -1,4 +1,5 @@
 const { MissingParamError } = require('../errors');
+const { ValidationComposite } = require('./validation-composite');
 
 const mockValidation = () => {
   class ValidationsSpy {
@@ -13,20 +14,6 @@ const mockValidation = () => {
 
 describe('ValidationComposite', () => {
   test('Should return an error if any validation fails', () => {
-    class ValidationComposite {
-      constructor(validations = []) {
-        this.validations = validations;
-      }
-
-      validate(input) {
-        for (const validation of this.validations) {
-          const error = validation.validate(input);
-          if (error) {
-            return error;
-          }
-        }
-      }
-    }
     const validationsSpy = [mockValidation(), mockValidation()];
     const sut = new ValidationComposite(validationsSpy);
 
