@@ -7,6 +7,15 @@ const mockAddAccountRepository = () => {
       this.username = username;
       this.email = email;
       this.password = password;
+
+      const userData = {
+        _id: 'valid_id',
+        username: 'valid_username',
+        email: 'valid_mail@email.com',
+        password: 'hashed_1234',
+      };
+
+      return await Promise.resolve(userData);
     }
   }
 
@@ -130,6 +139,23 @@ describe('CreateAccountUsecase', () => {
       expect(addSpy).toHaveBeenCalledWith({
         username: 'any_username',
         email: 'any_email@mail.com',
+        password: 'hashed_1234',
+      });
+    });
+
+    test('Should return a data of account on success', async () => {
+      const { sut } = makeSut();
+
+      const account = await sut.create({
+        username: 'any_username',
+        email: 'any_email@mail.com',
+        password: '1234',
+      });
+
+      expect(account).toEqual({
+        _id: 'valid_id',
+        username: 'valid_username',
+        email: 'valid_mail@email.com',
         password: 'hashed_1234',
       });
     });

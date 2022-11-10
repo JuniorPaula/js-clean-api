@@ -17,11 +17,13 @@ class CreateAccountUsecase {
 
     const hashedPassword = await this.encrypter.encrypt(password);
 
-    this.addAccountRepository.add({
+    const account = await this.addAccountRepository.add({
       username,
       email,
       password: hashedPassword,
     });
+
+    return account;
   }
 }
 
