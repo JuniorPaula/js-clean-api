@@ -7,12 +7,14 @@ class CreateAccountUsecase {
   }
 
   async create({ username, email, password }) {
-    this.username = username;
-    this.email = email;
-
     if (!this.encrypter || !this.encrypter.encrypt) {
       throw new MissingParamError('Encrypter');
     }
+
+    if (!this.addAccountRepository) {
+      throw new MissingParamError('AddAccountRepository');
+    }
+
     const hashedPassword = await this.encrypter.encrypt(password);
 
     this.addAccountRepository.add({

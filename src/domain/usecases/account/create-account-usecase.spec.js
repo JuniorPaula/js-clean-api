@@ -79,6 +79,22 @@ describe('CreateAccountUsecase', () => {
   });
 
   describe('AddAccountRepository', () => {
+    test('Should throws if no AddAccountRepository is provided', async () => {
+      const { encrypterStub } = makeSut();
+
+      const sut = new CreateAccountUsecase(encrypterStub);
+
+      const promise = sut.create({
+        username: 'any_username',
+        email: 'any_email@mail.com',
+        password: '1234',
+      });
+
+      await expect(promise).rejects.toThrow(
+        new MissingParamError('AddAccountRepository'),
+      );
+    });
+
     test('Should call AddAccountRepository with correct values', async () => {
       const { sut, addAccountRepositoryStub } = makeSut();
 
