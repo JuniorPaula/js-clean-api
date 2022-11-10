@@ -9,6 +9,8 @@ jest.mock('bcrypt', () => ({
   async hash(value, salt) {
     this.value = value;
     this.salt = salt;
+
+    return await Promise.resolve('value_hashed');
   },
 }));
 
@@ -21,6 +23,8 @@ const makeSut = () => {
 };
 
 describe('Encrypter', () => {
+  const salt = 12;
+
   test('Should return true if bcrypt returns true', async () => {
     const sut = makeSut();
     const isValid = await sut.compare('any_value', 'hashValue');
@@ -54,7 +58,6 @@ describe('Encrypter', () => {
   });
 
   test('Should call bcrypt.hash with correct values', async () => {
-    const salt = 12;
     const sut = makeSut();
 
     await sut.encrypt('value', salt);
@@ -70,5 +73,13 @@ describe('Encrypter', () => {
     await expect(sut.encrypt('any_value')).rejects.toThrow(
       new MissingParamError('salt'),
     );
+  });
+
+  test('Should return a valid valueHashed if brcypt.hash succeeds', async () => {
+    const sut = makeSut();
+
+    const valueHashed = await sut.encrypt('value', salt);
+
+    expect(valueHashed).toBe('value_hashed');
   });
 });

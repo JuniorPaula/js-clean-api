@@ -25,7 +25,8 @@ class Encrypter {
       throw new MissingParamError('salt');
     }
 
-    await bcrypt.hash(value, salt);
+    const valueHashed = await bcrypt.hash(value, salt);
+    return valueHashed;
   }
 }
 
