@@ -75,6 +75,18 @@ describe('Encrypter', () => {
     );
   });
 
+  test('Should throws if bcrypt.hash throws', async () => {
+    const sut = makeSut();
+
+    jest.spyOn(bcrypt, 'hash').mockImplementationOnce(() => {
+      throw new Error();
+    });
+
+    const promise = sut.encrypt('value', salt);
+
+    await expect(promise).rejects.toThrow();
+  });
+
   test('Should return a valid valueHashed if brcypt.hash succeeds', async () => {
     const sut = makeSut();
 
