@@ -22,16 +22,21 @@ class CreateAccountUsecase {
     ) {
       throw new MissingParamError('LoadUserByEmailRepository');
     }
-    await this.loadUserByEmailRepository.load(email);
-    const hashedPassword = await this.encrypter.encrypt(password);
 
-    const account = await this.addAccountRepository.add({
-      username,
-      email,
-      password: hashedPassword,
-    });
+    const hasAccount = await this.loadUserByEmailRepository.load(email);
 
-    return account;
+    if (!hasAccount) {
+      const hashedPassword = await this.encrypter.encrypt(password);
+      const account = await this.addAccountRepository.add({
+        username,
+        email,
+        password: hashedPassword,
+      });
+
+      return account;
+    }
+
+    return null;
   }
 }
 

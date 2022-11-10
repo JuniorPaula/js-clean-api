@@ -5,7 +5,7 @@ const mockLoadUserByEmailRepository = () => {
   class LoadUserByEmailRepositoryStub {
     async load(email) {
       this.email = email;
-      return this.user;
+      return null;
     }
   }
 
@@ -237,6 +237,27 @@ describe('CreateAccountUsecase', () => {
       });
 
       expect(loadUserByEmailRepositoryStub.email).toBe('any_email@mail.com');
+    });
+
+    test('Should return null if LoadUserByEmailRepository not return null', async () => {
+      const { sut, loadUserByEmailRepositoryStub } = makeSut();
+
+      jest.spyOn(loadUserByEmailRepositoryStub, 'load').mockReturnValueOnce(
+        Promise.resolve({
+          _id: 'valid_id',
+          username: 'valid_username',
+          email: 'valid_mail@email.com',
+          password: 'hashed_1234',
+        }),
+      );
+
+      const account = await sut.create({
+        username: 'any_username',
+        email: 'any_email@mail.com',
+        password: '1234',
+      });
+
+      expect(account).toBeNull();
     });
   });
 });
