@@ -16,6 +16,10 @@ class Encrypter {
 
     return isValid;
   }
+
+  async encrypt(value, salt) {
+    await bcrypt.hash(value, salt);
+  }
 }
 
 module.exports = { Encrypter };

@@ -1,9 +1,14 @@
 jest.mock('bcrypt', () => ({
   isValid: true,
-  async compare(value, hash) {
+  async compare(value, hashValue) {
     this.value = value;
-    this.hash = hash;
+    this.hashValue = hashValue;
     return this.isValid;
+  },
+
+  async hash(value, salt) {
+    this.value = value;
+    this.salt = salt;
   },
 }));
 
@@ -18,7 +23,7 @@ const makeSut = () => {
 describe('Encrypter', () => {
   test('Should return true if bcrypt returns true', async () => {
     const sut = makeSut();
-    const isValid = await sut.compare('any_value', 'hash');
+    const isValid = await sut.compare('any_value', 'hashValue');
 
     expect(isValid).toBe(true);
   });
@@ -26,7 +31,7 @@ describe('Encrypter', () => {
   test('Should return false if bcrypt returns false', async () => {
     const sut = makeSut();
     bcrypt.isValid = false;
-    const isValid = await sut.compare('any_value', 'hash');
+    const isValid = await sut.compare('any_value', 'hashValue');
 
     expect(isValid).toBe(false);
   });
@@ -36,7 +41,7 @@ describe('Encrypter', () => {
     await sut.compare('any_value', 'hash');
 
     expect(bcrypt.value).toBe('any_value');
-    expect(bcrypt.hash).toBe('hash');
+    expect(bcrypt.hashValue).toBe('hash');
   });
 
   test('Should throws if no params are provided', async () => {
@@ -46,5 +51,15 @@ describe('Encrypter', () => {
     await expect(sut.compare('any_value')).rejects.toThrow(
       new MissingParamError('hash'),
     );
+  });
+
+  test('Should call bcrypt.hash with correct values', async () => {
+    const salt = 12;
+    const sut = makeSut();
+
+    await sut.encrypt('value', salt);
+
+    expect(bcrypt.value).toBe('value');
+    expect(bcrypt.salt).toBe(salt);
   });
 });
