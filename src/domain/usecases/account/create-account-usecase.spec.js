@@ -95,6 +95,27 @@ describe('CreateAccountUsecase', () => {
       );
     });
 
+    test('Should throws if no AddAccountRepository has no method add', async () => {
+      const { encrypterStub } = makeSut();
+
+      class AddAccountRepositoryStub {}
+      const addAccountRepositoryStub = new AddAccountRepositoryStub();
+      const sut = new CreateAccountUsecase(
+        encrypterStub,
+        addAccountRepositoryStub,
+      );
+
+      const promise = sut.create({
+        username: 'any_username',
+        email: 'any_email@mail.com',
+        password: '1234',
+      });
+
+      await expect(promise).rejects.toThrow(
+        new MissingParamError('AddAccountRepository'),
+      );
+    });
+
     test('Should call AddAccountRepository with correct values', async () => {
       const { sut, addAccountRepositoryStub } = makeSut();
 

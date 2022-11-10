@@ -11,7 +11,7 @@ class CreateAccountUsecase {
       throw new MissingParamError('Encrypter');
     }
 
-    if (!this.addAccountRepository) {
+    if (!this.addAccountRepository || !this.addAccountRepository.add) {
       throw new MissingParamError('AddAccountRepository');
     }
 
