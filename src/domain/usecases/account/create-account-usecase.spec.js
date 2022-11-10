@@ -1,3 +1,4 @@
+const { MissingParamError } = require('../../../utils/errors');
 const { CreateAccountUsecase } = require('./create-account-usecase');
 
 const mockEncrypter = () => {
@@ -33,6 +34,18 @@ describe('CreateAccountUsecase', () => {
       });
 
       expect(encrypterSpy).toHaveBeenCalledWith('1234');
+    });
+
+    test('Should throws if no Encrypter is provided', async () => {
+      const sut = new CreateAccountUsecase();
+
+      const promise = sut.create({
+        username: 'any_username',
+        email: 'any_email@mail.com',
+        password: '1234',
+      });
+
+      await expect(promise).rejects.toThrow(new MissingParamError('Encrypter'));
     });
   });
 });
