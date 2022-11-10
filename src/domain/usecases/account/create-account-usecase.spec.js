@@ -1,15 +1,4 @@
-class CreateAccountUsecase {
-  constructor(encrypter) {
-    this.encrypter = encrypter;
-  }
-
-  async create({ username, email, password }) {
-    this.username = username;
-    this.email = email;
-
-    await this.encrypter.encrypt(password);
-  }
-}
+const { CreateAccountUsecase } = require('./create-account-usecase');
 
 describe('CreateAccountUsecase', () => {
   describe('Encrypter', () => {
