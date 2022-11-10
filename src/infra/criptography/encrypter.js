@@ -18,6 +18,13 @@ class Encrypter {
   }
 
   async encrypt(value, salt) {
+    if (!value) {
+      throw new MissingParamError('value');
+    }
+    if (!salt) {
+      throw new MissingParamError('salt');
+    }
+
     await bcrypt.hash(value, salt);
   }
 }
