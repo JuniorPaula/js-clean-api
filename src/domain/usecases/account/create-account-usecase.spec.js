@@ -1,19 +1,29 @@
 const { CreateAccountUsecase } = require('./create-account-usecase');
 
+const mockEncrypter = () => {
+  class EncrypterStub {
+    async encrypt(value) {
+      this.value = value;
+      return await Promise.resolve('hashed_1234');
+    }
+  }
+  return new EncrypterStub();
+};
+
+const makeSut = () => {
+  const encrypterStub = mockEncrypter();
+  const sut = new CreateAccountUsecase(encrypterStub);
+
+  return {
+    sut,
+    encrypterStub,
+  };
+};
+
 describe('CreateAccountUsecase', () => {
   describe('Encrypter', () => {
     test('Should call Encrypter with correct password', async () => {
-      class EncrypterStub {
-        async encrypt(value) {
-          this.value = value;
-          return await Promise.resolve('hashed_1234');
-        }
-      }
-
-      const encrypterStub = new EncrypterStub();
-
-      const sut = new CreateAccountUsecase(encrypterStub);
-
+      const { sut, encrypterStub } = makeSut();
       const encrypterSpy = jest.spyOn(encrypterStub, 'encrypt');
 
       await sut.create({
