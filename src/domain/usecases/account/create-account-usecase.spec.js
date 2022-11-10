@@ -23,6 +23,32 @@ const makeSut = () => {
 
 describe('CreateAccountUsecase', () => {
   describe('Encrypter', () => {
+    test('Should throws if no Encrypter is provided', async () => {
+      const sut = new CreateAccountUsecase();
+
+      const promise = sut.create({
+        username: 'any_username',
+        email: 'any_email@mail.com',
+        password: '1234',
+      });
+
+      await expect(promise).rejects.toThrow(new MissingParamError('Encrypter'));
+    });
+
+    test('Should throws if no Encrypter has no method encrypt', async () => {
+      class EncrypterStub {}
+      const encrypterStub = new EncrypterStub();
+      const sut = new CreateAccountUsecase(encrypterStub);
+
+      const promise = sut.create({
+        username: 'any_username',
+        email: 'any_email@mail.com',
+        password: '1234',
+      });
+
+      await expect(promise).rejects.toThrow(new MissingParamError('Encrypter'));
+    });
+
     test('Should call Encrypter with correct password', async () => {
       const { sut, encrypterStub } = makeSut();
       const encrypterSpy = jest.spyOn(encrypterStub, 'encrypt');
@@ -34,18 +60,6 @@ describe('CreateAccountUsecase', () => {
       });
 
       expect(encrypterSpy).toHaveBeenCalledWith('1234');
-    });
-
-    test('Should throws if no Encrypter is provided', async () => {
-      const sut = new CreateAccountUsecase();
-
-      const promise = sut.create({
-        username: 'any_username',
-        email: 'any_email@mail.com',
-        password: '1234',
-      });
-
-      await expect(promise).rejects.toThrow(new MissingParamError('Encrypter'));
     });
   });
 });

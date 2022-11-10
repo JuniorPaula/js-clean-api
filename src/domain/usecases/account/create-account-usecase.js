@@ -9,7 +9,7 @@ class CreateAccountUsecase {
     this.username = username;
     this.email = email;
 
-    if (!this.encrypter) {
+    if (!this.encrypter || !this.encrypter.encrypt) {
       throw new MissingParamError('Encrypter');
     }
     await this.encrypter.encrypt(password);
