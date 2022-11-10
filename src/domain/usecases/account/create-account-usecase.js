@@ -16,7 +16,10 @@ class CreateAccountUsecase {
       throw new MissingParamError('AddAccountRepository');
     }
 
-    if (!this.loadUserByEmailRepository) {
+    if (
+      !this.loadUserByEmailRepository ||
+      !this.loadUserByEmailRepository.load
+    ) {
       throw new MissingParamError('LoadUserByEmailRepository');
     }
 

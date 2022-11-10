@@ -205,5 +205,27 @@ describe('CreateAccountUsecase', () => {
         new MissingParamError('LoadUserByEmailRepository'),
       );
     });
+
+    test('Should throws if no LoadUserByEmailRepository has no method add', async () => {
+      const { encrypterStub, addAccountRepositoryStub } = makeSut();
+
+      class LoadUserByEmailRepositoryStub {}
+      const loadUserByEmailRepositoryStub = new LoadUserByEmailRepositoryStub();
+      const sut = new CreateAccountUsecase(
+        encrypterStub,
+        addAccountRepositoryStub,
+        loadUserByEmailRepositoryStub,
+      );
+
+      const promise = sut.create({
+        username: 'any_username',
+        email: 'any_email@mail.com',
+        password: '1234',
+      });
+
+      await expect(promise).rejects.toThrow(
+        new MissingParamError('LoadUserByEmailRepository'),
+      );
+    });
   });
 });
