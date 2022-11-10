@@ -8,7 +8,7 @@ class EmailValidation {
 
   validate(input) {
     try {
-      const isValid = this.emailValidator.validate(input[this.fieldName]);
+      const isValid = this.emailValidator.isValid(input[this.fieldName]);
       if (!isValid) {
         return new InvalidParamError(this.fieldName).message;
       }

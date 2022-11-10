@@ -3,7 +3,7 @@ const { EmailValidation } = require('./email-validation');
 
 const mockEmailValidation = () => {
   class EmailValidationSpy {
-    validate(input) {
+    isValid(input) {
       this.input = input;
       return true;
     }
@@ -26,7 +26,7 @@ describe('EmailValidation', () => {
   test('Should return an error if EmailValidator return false', () => {
     const { sut, emailValidationSpy } = makeSut();
 
-    jest.spyOn(emailValidationSpy, 'validate').mockReturnValueOnce(false);
+    jest.spyOn(emailValidationSpy, 'isValid').mockReturnValueOnce(false);
 
     const error = sut.validate({ email: 'invalid_email@mail.com' });
 
@@ -36,7 +36,7 @@ describe('EmailValidation', () => {
   test('Should call EmailValidator with correct email', () => {
     const { sut, emailValidationSpy } = makeSut();
 
-    const isValidSpy = jest.spyOn(emailValidationSpy, 'validate');
+    const isValidSpy = jest.spyOn(emailValidationSpy, 'isValid');
 
     sut.validate({ email: 'valid_email@mail.com' });
 
