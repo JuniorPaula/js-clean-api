@@ -1,6 +1,18 @@
 const { MissingParamError } = require('../../../utils/errors');
 const { CreateAccountUsecase } = require('./create-account-usecase');
 
+const mockAddAccountRepository = () => {
+  class AddAccountRepositoryStub {
+    async add({ username, email, password }) {
+      this.username = username;
+      this.email = email;
+      this.password = password;
+    }
+  }
+
+  return new AddAccountRepositoryStub();
+};
+
 const mockEncrypter = () => {
   class EncrypterStub {
     async encrypt(value) {
@@ -13,11 +25,14 @@ const mockEncrypter = () => {
 
 const makeSut = () => {
   const encrypterStub = mockEncrypter();
-  const sut = new CreateAccountUsecase(encrypterStub);
+  const addAccountRepositoryStub = mockAddAccountRepository();
+
+  const sut = new CreateAccountUsecase(encrypterStub, addAccountRepositoryStub);
 
   return {
     sut,
     encrypterStub,
+    addAccountRepositoryStub,
   };
 };
 
@@ -60,6 +75,26 @@ describe('CreateAccountUsecase', () => {
       });
 
       expect(encrypterSpy).toHaveBeenCalledWith('1234');
+    });
+  });
+
+  describe('AddAccountRepository', () => {
+    test('Should call AddAccountRepository with correct values', async () => {
+      const { sut, addAccountRepositoryStub } = makeSut();
+
+      const addSpy = jest.spyOn(addAccountRepositoryStub, 'add');
+
+      await sut.create({
+        username: 'any_username',
+        email: 'any_email@mail.com',
+        password: '1234',
+      });
+
+      expect(addSpy).toHaveBeenCalledWith({
+        username: 'any_username',
+        email: 'any_email@mail.com',
+        password: 'hashed_1234',
+      });
     });
   });
 });
