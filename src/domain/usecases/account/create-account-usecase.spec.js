@@ -1,6 +1,25 @@
 const { MissingParamError } = require('../../../utils/errors');
 const { CreateAccountUsecase } = require('./create-account-usecase');
 
+const mockLoadUserByEmailRepository = () => {
+  class LoadUserByEmailRepositoryStub {
+    async load(email) {
+      this.email = email;
+      return this.user;
+    }
+  }
+
+  const loadUserByEmailRepositoryStub = new LoadUserByEmailRepositoryStub();
+  loadUserByEmailRepositoryStub.user = {
+    _id: 'valid_id',
+    username: 'valid_username',
+    email: 'valid_mail@email.com',
+    password: 'hashed_1234',
+  };
+
+  return loadUserByEmailRepositoryStub;
+};
+
 const mockAddAccountRepository = () => {
   class AddAccountRepositoryStub {
     async add({ username, email, password }) {
@@ -35,13 +54,19 @@ const mockEncrypter = () => {
 const makeSut = () => {
   const encrypterStub = mockEncrypter();
   const addAccountRepositoryStub = mockAddAccountRepository();
+  const loadUserByEmailRepositoryStub = mockLoadUserByEmailRepository();
 
-  const sut = new CreateAccountUsecase(encrypterStub, addAccountRepositoryStub);
+  const sut = new CreateAccountUsecase(
+    encrypterStub,
+    addAccountRepositoryStub,
+    loadUserByEmailRepositoryStub,
+  );
 
   return {
     sut,
     encrypterStub,
     addAccountRepositoryStub,
+    loadUserByEmailRepositoryStub,
   };
 };
 
@@ -158,6 +183,27 @@ describe('CreateAccountUsecase', () => {
         email: 'valid_mail@email.com',
         password: 'hashed_1234',
       });
+    });
+  });
+
+  describe('LoadUserByEmailRepository', () => {
+    test('Should throw if LoadUserByEmailRepository is not provided', async () => {
+      const { encrypterStub, addAccountRepositoryStub } = makeSut();
+
+      const sut = new CreateAccountUsecase(
+        encrypterStub,
+        addAccountRepositoryStub,
+      );
+
+      const promise = sut.create({
+        username: 'any_username',
+        email: 'any_email@mail.com',
+        password: '1234',
+      });
+
+      await expect(promise).rejects.toThrow(
+        new MissingParamError('LoadUserByEmailRepository'),
+      );
     });
   });
 });
