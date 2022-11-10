@@ -227,5 +227,16 @@ describe('CreateAccountUsecase', () => {
         new MissingParamError('LoadUserByEmailRepository'),
       );
     });
+
+    test('Should call LoadUserByEmailRepository with correct email', async () => {
+      const { sut, loadUserByEmailRepositoryStub } = makeSut();
+      await sut.create({
+        username: 'any_username',
+        email: 'any_email@mail.com',
+        password: '1234',
+      });
+
+      expect(loadUserByEmailRepositoryStub.email).toBe('any_email@mail.com');
+    });
   });
 });
