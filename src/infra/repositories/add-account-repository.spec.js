@@ -1,11 +1,24 @@
+const { MissingParamError } = require('../../utils/errors');
 const { MongoHelper } = require('../helpers/mongodb-helper');
 
 class AddAccountRepository {
   async add({ username, email, password }) {
+    if (!username) {
+      throw new MissingParamError('username');
+    }
+
+    if (!email) {
+      throw new MissingParamError('email');
+    }
+
+    if (!password) {
+      throw new MissingParamError('password');
+    }
+
     const userModel = await MongoHelper.getCollection('users');
     const res = await userModel.insertOne({ username, email, password });
     const user = await userModel.findOne({ _id: res.insertedId });
-    console.log('user', user);
+
     return user;
   }
 }
@@ -37,5 +50,21 @@ describe('AddAccountRepository', () => {
     expect(account.username).toBe('john Doe');
     expect(account.email).toBe('jhon@mail.com');
     expect(account.password).toBe('1234');
+  });
+
+  test('Should throw if no params are provided', async () => {
+    const sut = new AddAccountRepository();
+
+    await expect(sut.add({})).rejects.toThrow(
+      new MissingParamError('username'),
+    );
+
+    await expect(sut.add({ username: 'jhon doe' })).rejects.toThrow(
+      new MissingParamError('email'),
+    );
+
+    await expect(
+      sut.add({ username: 'jhon doe', email: 'jhon@mail.com' }),
+    ).rejects.toThrow(new MissingParamError('password'));
   });
 });
