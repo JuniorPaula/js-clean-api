@@ -24,6 +24,10 @@ class AddAccountRepository {
 }
 let userModel;
 
+const makeSut = () => {
+  return new AddAccountRepository();
+};
+
 describe('AddAccountRepository', () => {
   beforeAll(async () => {
     await MongoHelper.connect(process.env.MONGO_URL);
@@ -39,7 +43,7 @@ describe('AddAccountRepository', () => {
   });
 
   test('Should return an account on success', async () => {
-    const sut = new AddAccountRepository();
+    const sut = makeSut();
 
     const account = await sut.add({
       username: 'john Doe',
@@ -53,7 +57,7 @@ describe('AddAccountRepository', () => {
   });
 
   test('Should throw if no params are provided', async () => {
-    const sut = new AddAccountRepository();
+    const sut = makeSut();
 
     await expect(sut.add({})).rejects.toThrow(
       new MissingParamError('username'),
