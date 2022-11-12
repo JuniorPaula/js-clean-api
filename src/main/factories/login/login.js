@@ -17,8 +17,10 @@ const {
 const { loginFactoryValidation } = require('./login-validation-factory');
 
 const makeLoginController = () => {
+  const salt = 12;
+
   const loadUserByEmailRepository = new LoadUserByEmailRepository();
-  const encrypter = new Encrypter();
+  const encrypter = new Encrypter(salt);
   const tokenGenerator = new TokenGenerator(env.tokeSecret);
   const updateAccessTokenRepository = new UpdateAccessTokenRepository();
 

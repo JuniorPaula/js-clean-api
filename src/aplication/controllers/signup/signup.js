@@ -38,6 +38,7 @@ class SignupController {
 
       return HttpResponse.ok(autheticationParams);
     } catch (error) {
+      console.log('##error', error);
       return HttpResponse.serverError();
     }
   }

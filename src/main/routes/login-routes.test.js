@@ -19,6 +19,18 @@ describe('LoginRoutes', () => {
     await MongoHelper.disconnect();
   });
 
+  test('Should return 200 on signup', async () => {
+    await request(app)
+      .post('/api/signup')
+      .send({
+        username: 'Jhon Doe',
+        email: 'jhon@mail.com',
+        password: '123456',
+        confirmPassword: '123456',
+      })
+      .expect(200);
+  });
+
   test('Should return 200 when valid credentials are provided', async () => {
     await userModel.insertOne({
       email: 'jane_email@mail.com',

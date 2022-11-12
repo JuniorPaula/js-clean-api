@@ -2,6 +2,10 @@ const bcrypt = require('bcrypt');
 const { MissingParamError } = require('../../utils/errors');
 
 class Encrypter {
+  constructor(salt) {
+    this.salt = salt;
+  }
+
   async compare(value, hash) {
     this.value = value;
     this.hash = hash;
@@ -17,15 +21,16 @@ class Encrypter {
     return isValid;
   }
 
-  async encrypt(value, salt) {
+  async encrypt(value) {
     if (!value) {
       throw new MissingParamError('value');
     }
-    if (!salt) {
+
+    if (!this.salt) {
       throw new MissingParamError('salt');
     }
 
-    const valueHashed = await bcrypt.hash(value, salt);
+    const valueHashed = await bcrypt.hash(value, this.salt);
     return valueHashed;
   }
 }

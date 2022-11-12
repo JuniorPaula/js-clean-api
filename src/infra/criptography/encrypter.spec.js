@@ -6,9 +6,8 @@ jest.mock('bcrypt', () => ({
     return this.isValid;
   },
 
-  async hash(value, salt) {
+  async hash(value) {
     this.value = value;
-    this.salt = salt;
 
     return await Promise.resolve('value_hashed');
   },
@@ -18,13 +17,12 @@ const bcrypt = require('bcrypt');
 const { MissingParamError } = require('../../utils/errors');
 const { Encrypter } = require('./encrypter');
 
+const salt = 12;
 const makeSut = () => {
-  return new Encrypter();
+  return new Encrypter(salt);
 };
 
 describe('Encrypter', () => {
-  const salt = 12;
-
   describe('#compare', () => {
     test('Should return true if bcrypt.compare returns true', async () => {
       const sut = makeSut();
@@ -65,10 +63,9 @@ describe('Encrypter', () => {
     test('Should call bcrypt.hash with correct values', async () => {
       const sut = makeSut();
 
-      await sut.encrypt('value', salt);
+      await sut.encrypt('value');
 
       expect(bcrypt.value).toBe('value');
-      expect(bcrypt.salt).toBe(salt);
     });
 
     test('Should throws if no params are provided in encrypt method', async () => {
@@ -77,7 +74,12 @@ describe('Encrypter', () => {
       await expect(sut.encrypt()).rejects.toThrow(
         new MissingParamError('value'),
       );
-      await expect(sut.encrypt('any_value')).rejects.toThrow(
+    });
+
+    test('Should throws if no salt is provided in constructor', async () => {
+      const sut = new Encrypter();
+
+      await expect(sut.encrypt('value')).rejects.toThrow(
         new MissingParamError('salt'),
       );
     });
@@ -89,7 +91,7 @@ describe('Encrypter', () => {
         throw new Error();
       });
 
-      const promise = sut.encrypt('value', salt);
+      const promise = sut.encrypt('value');
 
       await expect(promise).rejects.toThrow();
     });
@@ -97,7 +99,7 @@ describe('Encrypter', () => {
     test('Should return a valid valueHashed if brcypt.hash succeeds', async () => {
       const sut = makeSut();
 
-      const valueHashed = await sut.encrypt('value', salt);
+      const valueHashed = await sut.encrypt('value');
 
       expect(valueHashed).toBe('value_hashed');
     });
