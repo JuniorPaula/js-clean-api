@@ -2,7 +2,7 @@ const env = require('../../config/env');
 const {
   LoginController,
 } = require('../../../aplication/controllers/login/login');
-const { AuthUsecase } = require('../../../domain/usecases/auth-usecase');
+const { AuthUsecase } = require('../../../domain/usecases/auth/auth-usecase');
 const {
   LoadUserByEmailRepository,
 } = require('../../../infra/repositories/load-user-by-email-repository');
