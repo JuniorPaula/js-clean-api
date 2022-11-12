@@ -5,6 +5,7 @@ const {
   RequireFieldValidator,
   EmailValidation,
   ValidationComposite,
+  CompareFieldValidator,
 } = require('../../../utils/validations');
 
 const signupFactoryValidation = () => {
@@ -14,6 +15,7 @@ const signupFactoryValidation = () => {
     validations.push(new RequireFieldValidator(field));
   }
 
+  validations.push(new CompareFieldValidator('password', 'confirmPassword'));
   validations.push(new EmailValidation('email', new EmailValidatorAdapter()));
 
   return new ValidationComposite(validations);

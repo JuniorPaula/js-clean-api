@@ -2,6 +2,7 @@ const {
   RequireFieldValidator,
   EmailValidation,
   ValidationComposite,
+  CompareFieldValidator,
 } = require('../../../utils/validations');
 const { signupFactoryValidation } = require('./signup-validation-factory');
 
@@ -27,6 +28,7 @@ describe('Login Validation Factory', () => {
       validations.push(new RequireFieldValidator(field));
     }
 
+    validations.push(new CompareFieldValidator('password', 'confirmPassword'));
     validations.push(new EmailValidation('email', mockEmailValidation()));
 
     expect(ValidationComposite).toHaveBeenCalledWith(validations);
