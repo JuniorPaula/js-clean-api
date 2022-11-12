@@ -47,7 +47,11 @@ class AuthUsecase {
     if (isValid) {
       const accessToken = await this.tokenGenerator.generate(user._id);
       await this.updateAccessTokenRepository.update(user._id, accessToken);
-      return accessToken;
+
+      return {
+        access_token: accessToken,
+        username: user.username,
+      };
     }
     return null;
   }

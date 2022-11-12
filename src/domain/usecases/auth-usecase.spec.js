@@ -50,6 +50,7 @@ const mockLoadUserByEmailRepository = () => {
   const loadUserByEmailRepositoryStub = new LoadUserByEmailRepositoryStub();
   loadUserByEmailRepositoryStub.user = {
     id: 'any_id',
+    username: 'any_username',
     password: 'hashedPassword',
   };
 
@@ -116,16 +117,18 @@ describe('AuthUsecase', () => {
     expect(accessToken).toBeNull();
   });
 
-  test('Should return an accessToken if correct credentials is provided', async () => {
+  test('Should return an authentication params if correct credentials is provided', async () => {
     const { sut, tokenGeneratorStub } = makeSut();
 
-    const accessToken = await sut.auth(
+    const authenticationParams = await sut.auth(
       'valid_email@mail.com',
       'valid_password',
     );
 
-    expect(accessToken).toBe(tokenGeneratorStub.accessToken);
-    expect(accessToken).toBeTruthy();
+    expect(authenticationParams.username).toBe('any_username');
+    expect(authenticationParams.access_token).toBe(
+      tokenGeneratorStub.accessToken,
+    );
   });
 
   describe('LoadUserByEmailRepository', () => {
